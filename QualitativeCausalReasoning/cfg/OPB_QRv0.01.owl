@@ -1,0 +1,751 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY OPB "http://bhi.washington.edu/OPB#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY SemSim "http://bhi.washington.edu/SemSim#" >
+    <!ENTITY SemSim2 "http://www.bhi.washington.edu/SemSim#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://bhi.washington.edu/OPB#"
+     xml:base="http://bhi.washington.edu/OPB"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:SemSim2="http://www.bhi.washington.edu/SemSim#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:SemSim="http://bhi.washington.edu/SemSim#"
+     xmlns:OPB="http://bhi.washington.edu/OPB#">
+    <owl:Ontology rdf:about="http://bhi.washington.edu/OPB_QR"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01008 -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;OPB01008">
+        <rdfs:label xml:lang="en">wikipedia</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01116 -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;OPB01116">
+        <rdfs:label xml:lang="en">synonym</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01400 -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;OPB01400">
+        <rdfs:label xml:lang="en">IUPACclass</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB_01068 -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;OPB_01068">
+        <rdfs:label xml:lang="en">PATO_id</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#classTerm -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;classTerm"/>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#discussion -->
+
+    <owl:AnnotationProperty rdf:about="&OPB;discussion"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/creator -->
+
+    <owl:AnnotationProperty rdf:about="&dc;creator"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/rights -->
+
+    <owl:AnnotationProperty rdf:about="&dc;rights"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#incompatibleWith -->
+
+    <owl:AnnotationProperty rdf:about="&owl;incompatibleWith"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01070 -->
+
+    <owl:ObjectProperty rdf:about="&OPB;OPB01070">
+        <rdfs:label>hasPropertyPlayer</rdfs:label>
+        <rdfs:comment>A topObjectProperty that relates a physical dependency to a physical property that participates in the dependency</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01071 -->
+
+    <owl:ObjectProperty rdf:about="&OPB;OPB01071">
+        <rdfs:label>hasPosPropertyPlayer</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="&OPB;OPB01070"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01106 -->
+
+    <owl:ObjectProperty rdf:about="&OPB;OPB01106">
+        <rdfs:label>hasNegPropertyPlayer</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="&OPB;OPB01070"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB_00000 -->
+
+    <owl:ObjectProperty rdf:about="&OPB;OPB_00000">
+        <rdfs:label xml:lang="en">hasSolvedPropertyPlayer</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="&OPB;OPB01070"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim#hasMediator -->
+
+    <owl:ObjectProperty rdf:about="&SemSim2;hasMediator">
+        <rdfs:label xml:lang="en">hasMediator</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim#hasPhysicalProperty -->
+
+    <owl:ObjectProperty rdf:about="&SemSim2;hasPhysicalProperty">
+        <rdfs:label>hasPhysicalProperty</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim#hasSink -->
+
+    <owl:ObjectProperty rdf:about="&SemSim2;hasSink">
+        <rdfs:label>hasSink</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim#hasSource -->
+
+    <owl:ObjectProperty rdf:about="&SemSim2;hasSource">
+        <rdfs:label>hasSource</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim#physicalPropertyOf -->
+
+    <owl:ObjectProperty rdf:about="&SemSim2;physicalPropertyOf">
+        <rdfs:label>physicalPropertyOf</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topObjectProperty -->
+
+    <owl:ObjectProperty rdf:about="&owl;topObjectProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01236 -->
+
+    <owl:DatatypeProperty rdf:about="&OPB;OPB01236">
+        <rdfs:label>synonym</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB01363 -->
+
+    <owl:DatatypeProperty rdf:about="&OPB;OPB01363">
+        <rdfs:label>displayName</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#OPB_00507 -->
+
+    <owl:DatatypeProperty rdf:about="&OPB;OPB_00507">
+        <rdfs:label>discussion</rdfs:label>
+        <discussion rdf:datatype="&xsd;string"></discussion>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topDataProperty -->
+
+    <owl:DatatypeProperty rdf:about="&owl;topDataProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#DecreasedProperty -->
+
+    <owl:Class rdf:about="&OPB;DecreasedProperty">
+        <rdfs:subClassOf rdf:resource="&OPB;NegativelyInfluencedProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#IncreasedProperty -->
+
+    <owl:Class rdf:about="&OPB;IncreasedProperty">
+        <rdfs:subClassOf rdf:resource="&OPB;PositivelyInfluencedProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#NegativelyInfluencedProperty -->
+
+    <owl:Class rdf:about="&OPB;NegativelyInfluencedProperty"/>
+    
+
+
+    <!-- http://bhi.washington.edu/OPB#PositivelyInfluencedProperty -->
+
+    <owl:Class rdf:about="&OPB;PositivelyInfluencedProperty"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="urn:swrl#dep1">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#prop2">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#prop1">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#ent1">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#process1">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#process">
+        <rdf:type rdf:resource="&swrl;Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&swrl;Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="&OPB;OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="&SemSim2;hasSink"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest rdf:resource="&rdf;nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01071"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&swrl;Imp"/>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest rdf:resource="&rdf;nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01106"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="&OPB;OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                    </rdf:Description>
+                                </rdf:rest>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="&SemSim2;hasSource"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:body>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&swrl;Imp"/>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest rdf:resource="&rdf;nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01071"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="&SemSim2;hasPhysicalProperty"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process1"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="&SemSim2;hasMediator"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#process1"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                            </rdf:Description>
+                        </rdf:rest>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="&OPB;OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                    </rdf:Description>
+                </rdf:rest>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:body>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&swrl;Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="&OPB;OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="&SemSim2;hasPhysicalProperty"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process1"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="&SemSim2;hasSource"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#process1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest rdf:resource="&rdf;nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01071"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&swrl;Imp"/>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:rest rdf:resource="&rdf;nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01106"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="&swrl;AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="&OPB;OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="&OPB;OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="&SemSim2;hasPhysicalProperty"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&swrl;AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="&SemSim2;hasSink"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#process1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&swrl;AtomList"/>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&swrl;IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="&SemSim2;physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process1"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+
