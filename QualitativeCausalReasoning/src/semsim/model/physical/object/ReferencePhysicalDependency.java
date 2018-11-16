@@ -6,15 +6,27 @@ import semsim.SemSimLibrary;
 import semsim.annotation.ReferenceOntologyAnnotation;
 import semsim.annotation.ReferenceTerm;
 import semsim.definitions.ReferenceOntologies;
+import semsim.definitions.SemSimTypes;
 import semsim.definitions.SemSimRelations.SemSimRelation;
+import semsim.model.collection.SemSimModel;
+import semsim.model.physical.PhysicalDependency;
 import semsim.owl.SemSimOWLFactory;
 
+/**
+ * Class for representing physical dependencies that are defined using
+ * controlled knowledge resource terms.
+ * @author mneal
+ *
+ */
 public class ReferencePhysicalDependency extends PhysicalDependency implements ReferenceTerm {
 
-	public ReferencePhysicalDependency(URI uri, String description, SemSimLibrary lib){
-		addReferenceOntologyAnnotation(SemSimRelation.HAS_PHYSICAL_DEFINITION, uri, description, lib);
+	public ReferencePhysicalDependency(URI uri, String description){
+		super(SemSimTypes.REFERENCE_PHYSICAL_DEPENDENCY);
+		referenceuri = uri;
+		setName(description);
 	}
-
+	
+	@Override
 	public ReferenceOntologyAnnotation getPhysicalDefinitionReferenceOntologyAnnotation(SemSimLibrary lib){
 		if(hasPhysicalDefinitionAnnotation()){
 			return new ReferenceOntologyAnnotation(SemSimRelation.HAS_PHYSICAL_DEFINITION, referenceuri, getDescription(), lib);
@@ -22,15 +34,14 @@ public class ReferencePhysicalDependency extends PhysicalDependency implements R
 		return null;
 	}
 	
-	/**
-	 * @return The name of the knowledge base that contains the URI used as the annotation value
-	 */
-	public String getNamewithOntologyAbreviation(SemSimLibrary semsimlib) {
-		return getName() + " (" + semsimlib.getReferenceOntologyAbbreviation(referenceuri) + ")";
-	}
-	
+	@Override
 	public URI getPhysicalDefinitionURI() {
 		return URI.create(referenceuri.toString());
+	}
+	
+	@Override
+	public String getNamewithOntologyAbreviation(SemSimLibrary semsimlib) {
+		return getName() + " (" + semsimlib.getReferenceOntologyAbbreviation(referenceuri) + ")";
 	}
 	
 	@Override
@@ -39,7 +50,7 @@ public class ReferencePhysicalDependency extends PhysicalDependency implements R
 	}
 
 	@Override
-	public String getTermID() {
+	public String getTermFragment() {
 		return SemSimOWLFactory.getIRIfragment(referenceuri.toString());
 	}
 	
@@ -47,9 +58,19 @@ public class ReferencePhysicalDependency extends PhysicalDependency implements R
 	protected boolean isEquivalent(Object obj) {
 		URI physdefuri = ((ReferencePhysicalDependency)obj).getPhysicalDefinitionURI();
 		
-		String physdefID = getTermID().replace(":", "_");
+		String physdefID = getTermFragment().replace(":", "_");
 		String thisID = SemSimOWLFactory.getIRIfragment(physdefuri.toString()).replace(":", "_");
 		
 		return (ReferenceOntologies.URIsAreFromSameReferenceOntology(physdefuri, referenceuri) 
 				&& physdefID.equals(thisID));	}
+
+	@Override
+	public ReferencePhysicalDependency addToModel(SemSimModel model) {
+		return model.addReferencePhysicalDependency(this);
+	}
+	
+	@Override
+	public void removeFromModel(SemSimModel model) {
+		model.removeReferencePhysicalDependency(this);
+	}
 }

@@ -46,7 +46,7 @@ public class Extraction {
 	
 	/**
 	 * The keyset for this map includes all submodels that should be included in the extracted model.
-	 * The boolean values indicate whether to attempt to preserved the submodels within the submodel.
+	 * The boolean values indicate whether to attempt to preserve the submodels within the submodel.
 	 */
 	private Map<Submodel, Boolean> submodelstoextract;
 	
@@ -76,57 +76,95 @@ public class Extraction {
 		setSubmodelsToExtract(new HashMap<Submodel, Boolean>());
 	}
 	
+	/** @return The model from which the extraction originates */
 	public SemSimModel getSourceModel() {
 		return sourcemodel;
 	}
 
+	/**
+	 * Set the source model for this extraction
+	 * @param sourcemodel The extraction's source model
+	 */
 	public void setSourceModel(SemSimModel sourcemodel) {
 		this.sourcemodel = sourcemodel;
 	}
 	
 
 	// Physical processes
+	/** @return The physical processes to include in the extraction */
 	public Map<PhysicalProcess, Boolean> getProcessesToExtract() {
 		return processestoextract;
 	}
 
+	/**
+	 * Define which physical processes to include in the extraction
+	 * @param processestoextract The processes to extract
+	 */
 	public void setProcessesToExtract(Map<PhysicalProcess, Boolean> processestoextract) {
 		this.processestoextract = processestoextract;
 	}
 	
+	/**
+	 * Add a physical process to the extraction
+	 * @param process The physical process
+	 * @param includeparticipants Whether to include the process's physical entity participants in the extraction as well
+	 */
 	public void addProcessToExtract(PhysicalProcess process, Boolean includeparticipants){
 		this.getProcessesToExtract().put(process, includeparticipants);
 	}
 
 	// Physical entities
+	/** @return The physical entities included in the extraction */
 	public Map<PhysicalEntity, Boolean> getEntitiesToExtract() {
 		return entitiestoextract;
 	}
 
+	/**
+	 * Set which physical entities to include in the extraction
+	 * @param entitiestoextract The physical entities to include
+	 */
 	public void setEntitiesToExtract(Map<PhysicalEntity, Boolean> entitiestoextract) {
 		this.entitiestoextract = entitiestoextract;
 	}
 	
+	/**
+	 * Add a physical entity to the extraction
+	 * @param entity The physical entity to add
+	 * @param val Currently meaningless, but are included for homogeneity with other extraction maps
+	 */
 	public void addEntityToExtract(PhysicalEntity entity, Boolean val){
 		this.getEntitiesToExtract().put(entity, val);
 	}
 
 	// Data structures
+	/** @return A Map indicating the set of {@link DataStructure}s to extract and whether 
+	 * to include their computational inputs as well
+	 */
 	public Map<DataStructure, Boolean> getDataStructuresToExtract() {
 		return datastructurestoextract;
 	}
 
+	/**
+	 * Set the {@link DataStructure}s to extract
+	 * @param datastructurestoextract A Map of {@link DataStructure}s and boolean values
+	 * indicating whether to also include their computational inputs
+	 */
 	public void setDataStructuresToExtract(Map<DataStructure, Boolean> datastructurestoextract) {
 		this.datastructurestoextract = datastructurestoextract;
 	}
 	
+	/**
+	 * Add a {@link DataStructure} to the extraction
+	 * @param ds The {@link DataStructure} to add
+	 * @param includeinputs Whether to include the {@link DataStructure}'s computational inputs as well
+	 */
 	public void addDataStructureToExtraction(DataStructure ds, Boolean includeinputs){
 		getDataStructuresToExtract().put(ds, includeinputs);
 	}
 	
 	/**
-	 * Add a data structure's computational inputs to the extraction
-	 * @param ds
+	 * Add a {@link DataStructure}'s computational inputs to the extraction
+	 * @param ds The data structure with inputs to add
 	 */
 	public void addInputsToExtract(DataStructure ds){
 		
@@ -143,22 +181,30 @@ public class Extraction {
 	}
 
 	// Submodels
+	/** @return A Map indicating which {@link Submodel}s to extract and whether to preserve the submodel's submodels. */
 	public Map<Submodel, Boolean> getSubmodelsToExtract() {
 		return submodelstoextract;
 	}
 
+	/**
+	 * Set which {@link Submodel}s to extract
+	 * @param submodelstoextract A Map indicating which {@link Submodel}s to extract
+	 * and whether to include their submodels as well
+	 */
 	public void setSubmodelsToExtract(Map<Submodel, Boolean> submodelstoextract) {
 		this.submodelstoextract = submodelstoextract;
 	}
 	
+	/**
+	 * Add a {@link Submodel to an extraction}
+	 * @param submodel The {@link Submodel} to add
+	 * @param val Whether to include the submodel's submodels
+	 */
 	public void addSubmodelToExtract(Submodel submodel, Boolean val){
 		this.getSubmodelsToExtract().put(submodel, val);
 	}
 	
-	/**
-	 * 
-	 * @return True if there is nothing specified for extraction, otherwise false
-	 */
+	/** @return True if there is nothing specified for extraction, otherwise false */
 	public boolean isEmpty(){
 		return (getDataStructuresToExtract().isEmpty() && getEntitiesToExtract().isEmpty() 
 				&& getProcessesToExtract().isEmpty() && getSubmodelsToExtract().isEmpty());
@@ -167,7 +213,7 @@ public class Extraction {
 	
 	/**
 	 * 
-	 * @param ds
+	 * @param ds A data structure
 	 * @return Whether a particular data structure is a user-defined 
 	 * input for the extraction
 	 */
@@ -185,8 +231,8 @@ public class Extraction {
 	}
 	
 	/**
-	 * @param ds
-	 * @return Whether a particular data structure is converted from
+	 * @param ds A data structure
+	 * @return Whether the data structure is converted from
 	 * a dependent variable to a user-defined input for the extraction
 	 */
 	public boolean isVariableConvertedToInput(DataStructure ds){
@@ -208,19 +254,11 @@ public class Extraction {
 	
 	/**
 	 * Extract out a portion of a model as a new SemSim model
-	 * 
-	 *  @param srcmodel The SemSimModel to extract from
-	 *  @param extraction A list of all DataStructures to preserve in the extracted model mapped
-	 *  to the input DataStructures required to compute them (these inputs can differ from the source model)
-	 *  @return A new SemSimModel representing the extract
+	 *  @return A new SemSimModel representing the extraction
+	 *  @throws CloneNotSupportedException
 	 */
 	public SemSimModel extractToNewModel() throws CloneNotSupportedException {
 		SemSimModel extractedmodel = new SemSimModel();
-		
-		// Copy over all the model-level information
-//		for(Annotation modann : getSourceModel().getAnnotations()){
-//			extractedmodel.addAnnotation(new Annotation(modann));
-//		}
 		
 		// Copy in units
 		for(UnitOfMeasurement uom : getSourceModel().getUnits()){
@@ -243,7 +281,12 @@ public class Extraction {
 				newds.setStartValue(null);
 				newds.getAnnotations().addAll(ds.getAnnotations());
 				
-				if(newds instanceof MappableVariable) ((MappableVariable)newds).getMappedFrom().clear();
+				if(newds instanceof MappableVariable){
+					MappableVariable mvnewds = ((MappableVariable)newds);
+					mvnewds.setMappedFrom(null);
+					mvnewds.setPrivateInterfaceValue("");
+					mvnewds.setPublicInterfaceValue("");
+				}
 			}
 			
 			extractedmodel.addDataStructure(newds);
@@ -292,15 +335,14 @@ public class Extraction {
 			
 			if(ds.isMapped()){
 				MappableVariable mv = ((MappableVariable)ds);
-				Set<MappableVariable> newmappedfromset = new HashSet<MappableVariable>();
 				Set<MappableVariable> newmappedtoset = new HashSet<MappableVariable>();
 				
-				for(MappableVariable mappedfrommv : mv.getMappedFrom()){
-					String mappedfromname = mappedfrommv.getName();
+				if (mv.getMappedFrom()!=null){
+					String mappedfromname = mv.getMappedFrom().getName();
 					
 					// Only add if the mapped variable is also in the extracted model
 					if(extractedmodel.containsDataStructure(mappedfromname))
-						newmappedfromset.add((MappableVariable) extractedmodel.getAssociatedDataStructure(mappedfromname));
+						mv.setMappedFrom(mv.getMappedFrom());
 				}
 				
 				for(MappableVariable mappedtomv : mv.getMappedTo()){
@@ -311,7 +353,7 @@ public class Extraction {
 						newmappedtoset.add((MappableVariable) extractedmodel.getAssociatedDataStructure(mappedtoname));
 				}
 				
-				mv.setMappedFrom(newmappedfromset);
+				
 				mv.setMappedTo(newmappedtoset);	
 			}
 		}
@@ -343,10 +385,9 @@ public class Extraction {
 	
 	/**
 	 * Clones all submodels that should be preserved in the extraction.
-	 * @param extractedmodel
-	 * @throws CloneNotSupportedException
+	 * @param extractedmodel The SemSimModel representing the extraction
 	 */
-	private void extractSubModels(SemSimModel extractedmodel) throws CloneNotSupportedException {
+	private void extractSubModels(SemSimModel extractedmodel) {
 		
 		for(Submodel sub : getSubmodelsToExtract().keySet()){
 						

@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="H:/git/SemGen/thirdParty/jxbrowser/jxbrowser-mac-6.2.jar"/>
 	<classpathentry kind="lib" path="H:/git/SemGen/thirdParty/jxbrowser/jxbrowser-win-6.2.jar"/>
 	<classpathentry kind="lib" path="H:/git/SemGen/thirdParty/jxbrowser/licence.jar"/>
+	<classpathentry kind="lib" path="H:/git/SemGen/thirdParty/py4j0.10.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -47,8 +47,9 @@ import semsim.model.collection.SemSimModel;
 import semsim.model.computational.Computation;
 import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.physical.PhysicalProcess;
-import semsim.model.physical.object.PhysicalPropertyinComposite;
+import semsim.model.physical.object.PhysicalPropertyInComposite;
 import semsim.owl.SemSimOWLFactory;
+import semsim.writing.SemSimOWLwriter;
 
 
 public class QualitativeReasoningWorkbench {
@@ -58,7 +59,7 @@ public class QualitativeReasoningWorkbench {
 	
 	public OWLOntology OPBedited;
 	public OWLOntology OPB_QR;
-	public static String OPBns = RDFNamespace.OPB.getNamespaceasString();
+	public static String OPBns = RDFNamespace.OPB.getNamespaceAsString();
 	public static OWLClass OPBtopDepClass = factory.getOWLClass(IRI.create(OPBns + "OPB_01391"));
 	public static OWLClass OPBtopPropClass = factory.getOWLClass(IRI.create(OPBns + "OPB_00147"));
 	public static OWLClass OPBdynamicalProcessClass = factory.getOWLClass(IRI.create(OPBns + "OPB_01650"));
@@ -100,7 +101,7 @@ public class QualitativeReasoningWorkbench {
 	
 	public OWLOntology mergeOPBandSemSimModel(SemSimModel model) throws OWLException{
 	     		
-		 semsimOrigOnt = model.toOWLOntology();
+		 semsimOrigOnt = new SemSimOWLwriter(model).createOWLOntologyFromModel();
 		 semsimDepOnt = manager.createOntology();
 	     mergedOnt = manager.createOntology();
 	     
@@ -140,11 +141,11 @@ public class QualitativeReasoningWorkbench {
 		    				 String physpropURI = modelns + ds.getName() + "_property";
 		    				 
 		    				 // Get the process URI
-		    				 String processURI = SemSimOWLFactory.getFunctionalIndObjectProperty(semsimOrigOnt, 
+		    				 String processURI = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(semsimOrigOnt, 
 		    						 physpropURI, SemSimRelation.PHYSICAL_PROPERTY_OF.getIRI().toString());
 		    				  
 		    				 // Get the sources for the process
-		    				 Set<String> sources = SemSimOWLFactory.getIndObjectProperty(semsimOrigOnt, 
+		    				 Set<String> sources = SemSimOWLFactory.getIndObjectPropertyObjects(semsimOrigOnt, 
 		    						 processURI, SemSimRelation.HAS_SOURCE.getIRI().toString());
 		    				 
 		    				 for(String source : sources){
@@ -161,7 +162,7 @@ public class QualitativeReasoningWorkbench {
 		    				 }
 		    				 
 		    				 // Get the sinks for the process
-		    				 Set<String> sinks = SemSimOWLFactory.getIndObjectProperty(semsimOrigOnt, 
+		    				 Set<String> sinks = SemSimOWLFactory.getIndObjectPropertyObjects(semsimOrigOnt, 
 		    						 processURI, SemSimRelation.HAS_SINK.getIRI().toString());
 		    				 
 		    				 for(String sink : sinks){
@@ -178,7 +179,7 @@ public class QualitativeReasoningWorkbench {
 		    				 }
 		    				 
 		    				 // Get the mediators for the process
-		    				 Set<String> mediators = SemSimOWLFactory.getIndObjectProperty(semsimOrigOnt, 
+		    				 Set<String> mediators = SemSimOWLFactory.getIndObjectPropertyObjects(semsimOrigOnt, 
 		    						 processURI, SemSimRelation.HAS_MEDIATOR.getIRI().toString());
 		    				 
 		    				 for(String mediator : mediators){
@@ -396,7 +397,7 @@ public class QualitativeReasoningWorkbench {
 	
 	private void addPropertyIndividual(DataStructure ds, String modelns, String depindividual) throws OWLException{
 		
- 		 PhysicalPropertyinComposite prop = ds.getPhysicalProperty();
+ 		 PhysicalPropertyInComposite prop = ds.getPhysicalProperty();
 		 OWLClass OPBparentClass = factory.getOWLClass(IRI.create(prop.getPhysicalDefinitionURI()));
 		 String OPBparentClassString = OPBparentClass.getIRI().toString();
 		 
@@ -416,7 +417,7 @@ public class QualitativeReasoningWorkbench {
 		 // Get what it's a property of and add it to the semsimDepOnt
 		 if(ds.hasAssociatedPhysicalComponent()){
 			 
-			 String physpropOfURI = SemSimOWLFactory.getFunctionalIndObjectProperty(semsimOrigOnt, 
+			 String physpropOfURI = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(semsimOrigOnt, 
 					 propertyURI, SemSimRelation.PHYSICAL_PROPERTY_OF.getIRI().toString());
 			 
 			 OWLClass parentclassforpropof = (ds.getAssociatedPhysicalModelComponent() instanceof PhysicalProcess) ? 

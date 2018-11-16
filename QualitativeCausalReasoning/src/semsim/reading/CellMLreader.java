@@ -1,39 +1,27 @@
 package semsim.reading;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.sbml.jsbml.ASTNode;
 import org.sbml.jsbml.JSBML;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-
 import semsim.annotation.Annotation;
-import semsim.annotation.CurationalMetadata.Metadata;
-
 import semsim.definitions.RDFNamespace;
 import semsim.definitions.SemSimRelations;
 import semsim.definitions.SemSimRelations.SemSimRelation;
+import semsim.fileaccessors.ModelAccessor;
 import semsim.model.collection.FunctionalSubmodel;
 import semsim.model.collection.SemSimModel;
 import semsim.model.collection.Submodel;
@@ -43,40 +31,33 @@ import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
 import semsim.utilities.SemSimUtil;
 
+/**
+ * Class for reading in a CellML model into a {@link SemSimModel} object.
+ * @author mneal
+ *
+ */
 public class CellMLreader extends ModelReader {
 	private Namespace mainNS;
-	private SemSimRDFreader rdfblock;
-	private Element rdfblockelement;
-	private XMLOutputter xmloutputter = new XMLOutputter();
-	
-	public CellMLreader(File file) {
-		super(file);
-	}
-	
+	public AbstractRDFreader rdfreader;
+	private Element rdfreaderelement;
+	private static XMLOutputter xmloutputter = new XMLOutputter();
+
+	/**
+	 * Constructor
+	 * @param modelaccessor Location of the CellML model
+	 */
 	public CellMLreader(ModelAccessor modelaccessor){
 		super(modelaccessor);
 	}
 	
-	public SemSimModel read() {
-		
-		String srccode = modelaccessor.getLocalModelTextAsString();
-		
+	@Override
+	public SemSimModel read() throws IOException, JDOMException {
 		xmloutputter.setFormat(Format.getPrettyFormat());
 		
-		SAXBuilder builder = new SAXBuilder();
-		Document doc = null;
-		
-		try {
-			InputStream is = new ByteArrayInputStream(srccode.getBytes("UTF-8"));
-			doc = builder.build(is);
-		} catch (JDOMException | IOException e) {
-			e.printStackTrace();
-			semsimmodel.addError(e.getLocalizedMessage());
-			return semsimmodel;
-		}
+		Document doc = modelaccessor.getJDOMDocument();
 		
 		if(doc.getRootElement()==null){
-			semsimmodel.addError("Could not parse original model: Root element of XML document was null");
+			semsimmodel.addError("Could not parse original model: Could not find root element of XML document");
 			return semsimmodel;
 		}
 
@@ -92,19 +73,16 @@ public class CellMLreader extends ModelReader {
 		getDocumentation(doc, semsimmodel);
 
 		// Get the main RDF block for the CellML model
-		rdfblockelement = getRDFmarkupForElement(doc.getRootElement());
+		rdfreaderelement = getRDFmarkupForElement(doc.getRootElement());
 		
 		String rdfstring = null;
 		
-		if(rdfblockelement!=null){
-			rdfstring = getUTFformattedString(xmloutputter.outputString(rdfblockelement));
-		}
+		if(rdfreaderelement != null)
+			rdfstring = getUTFformattedString(xmloutputter.outputString(rdfreaderelement));
 		
-		rdfblock = new SemSimRDFreader(modelaccessor, semsimmodel, rdfstring, mainNS.getURI().toString());
+		rdfreader = modelaccessor.createRDFreaderForModel(semsimmodel, rdfstring, sslib);
 		
-		// Get the semsim namespace of the model, if present, according to the rdf block
-		if(rdfblock.rdf.getNsPrefixURI("model") !=null ) semsimmodel.setNamespace(rdfblock.rdf.getNsPrefixURI("model"));
-		else semsimmodel.setNamespace(semsimmodel.generateNamespaceFromDateAndTime());
+		rdfreader.getModelLevelAnnotations();
 		
 		// Get imported components
 		Iterator<?> importsit = doc.getRootElement().getChildren("import", mainNS).iterator();
@@ -130,15 +108,18 @@ public class CellMLreader extends ModelReader {
 				String localcompname = importedcompel.getAttributeValue("name");
 				String origcompname = importedcompel.getAttributeValue("component_ref");
 				
-				FunctionalSubmodel instantiatedsubmodel = 
-						SemSimComponentImporter.importFunctionalSubmodel(
-								modelaccessor.getFileThatContainsModel(), 
-								semsimmodel, localcompname, origcompname, hrefValue, sslib);
-				
-				String metadataid = importedcompel.getAttributeValue("id", RDFNamespace.CMETA.createJdomNamespace());
-				instantiatedsubmodel.setMetadataID(metadataid);
+				FunctionalSubmodel instantiatedsubmodel;
+				try {
+					instantiatedsubmodel = SemSimComponentImporter.importFunctionalSubmodel(
+							modelaccessor, 
+							semsimmodel, localcompname, origcompname, hrefValue, sslib);
 
-				//collectSingularBiologicalAnnotationForSubmodel(instantiatedsubmodel);
+				
+					String metadataid = importedcompel.getAttributeValue("id", RDFNamespace.CMETA.createJdomNamespace());
+					semsimmodel.assignValidMetadataIDtoSemSimObject(metadataid, instantiatedsubmodel);
+				} catch (JDOMException | IOException e) {
+						e.printStackTrace();
+					}
 			}
 		}
 		
@@ -175,6 +156,7 @@ public class CellMLreader extends ModelReader {
 				String baseunits = unitfactor.getAttributeValue("units");
 				String prefix = unitfactor.getAttributeValue("prefix");
 				String exponent = unitfactor.getAttributeValue("exponent");
+				String multiplier = unitfactor.getAttributeValue("multiplier");
 				
 				UnitOfMeasurement baseuom = semsimmodel.getUnit(baseunits);
 				if(baseuom==null){
@@ -183,7 +165,8 @@ public class CellMLreader extends ModelReader {
 					semsimmodel.addUnit(baseuom);
 				}
 				double exp = (exponent==null) ? 1.0 : Double.parseDouble(exponent);
-				uom.addUnitFactor(new UnitFactor(baseuom, exp, prefix));
+				double mult = (multiplier==null) ? 1.0 : Double.parseDouble(multiplier);
+				uom.addUnitFactor(new UnitFactor(baseuom, exp, prefix, mult));
 			}
 		}
 
@@ -204,9 +187,10 @@ public class CellMLreader extends ModelReader {
 			
 			String mathmltext = null;
 			List<?> compMathMLelements = comp.getChildren("math", RDFNamespace.MATHML.createJdomNamespace());
-			if(compMathMLelements!=null){
+			
+			if(compMathMLelements!=null)
 				mathmltext = xmloutputter.outputString(comp.getChildren("math", RDFNamespace.MATHML.createJdomNamespace()));
-			}
+			
 
 			// Iterate through variables to find the outputs
 			ArrayList<DataStructure> allvars = new ArrayList<DataStructure>();
@@ -273,28 +257,11 @@ public class CellMLreader extends ModelReader {
 				cvar.setDeclared(true);
 				String varmetaID = var.getAttributeValue("id", RDFNamespace.CMETA.createJdomNamespace());
 				
-				if(varmetaID!=null) cvar.setMetadataID(varmetaID);
+				semsimmodel.assignValidMetadataIDtoSemSimObject(varmetaID, cvar);
 
-				// Collect the singular biological annotation, if present
-				if(cvar.getMetadataID() != null){
-					
-					rdfblock.getDataStructureAnnotations(cvar);
-					// TODO: Might need to redo this section once BiologicalRDFblock is done.
-					
-//					URI termURI = rdfblock.collectSingularBiologicalAnnotation(cvar);
-//					
-//					if(termURI!=null){
-//						
-//						if(termURI.toString().startsWith("http:identifiers.org/opb"))
-//							termURI = rdfblock.swapInOPBnamespace(termURI);
-//						
-//						PhysicalProperty prop = rdfblock.getSingularPhysicalProperty(termURI);
-//						cvar.setSingularAnnotation(prop);
-//					}
-//					
-//					rdfblock.collectCompositeAnnotation(cvar);
-					
-				}
+				// Collect the biological annotations, if present
+				if(cvar.getMetadataID() != null) rdfreader.getDataStructureAnnotations(cvar);
+
 				semsimmodel.addDataStructure(cvar);
 			}
 			
@@ -332,11 +299,11 @@ public class CellMLreader extends ModelReader {
 						}
 						
 						// Create the computational dependency network among the component variables
-						whiteBoxFunctionalSubmodelEquations(varmathmlel, compname, semsimmodel, cvar);
+						whiteBoxFunctionalSubmodelEquation(varmathmlel, compname, semsimmodel, cvar);
 					}
 				}
 				
-				if(cvar.getComputation().getComputationalCode()==null && initval!=null)
+				if(cvar.getComputation().getComputationalCode().isEmpty() && initval!=null)
 					cvar.getComputation().setComputationalCode(varname + " = " + initval);
 			}
 			
@@ -352,28 +319,31 @@ public class CellMLreader extends ModelReader {
 			// keep it with component but get individual variable math as needed?)
 			if(mathmltext!=null) submodel.getComputation().setMathML(mathmltext);
 
-			if(metadataid!=null) submodel.setMetadataID(metadataid);
+			semsimmodel.assignValidMetadataIDtoSemSimObject(metadataid, submodel);
 			
-			// Collect the biological annotation, if present
-			//collectSingularBiologicalAnnotationForSubmodel(submodel);
-			
+			// Collect the free text annotation for the component
+			rdfreader.collectFreeTextAnnotation(submodel, 
+					rdfreader.rdf.getResource(SemSimRDFreader.TEMP_NAMESPACE + "#" + submodel.getMetadataID()));		
 			semsimmodel.addSubmodel(submodel);
 		}
 		
 		// Process the CellML groupings
 		Iterator<?> groupit = doc.getRootElement().getChildren("group", mainNS).iterator();
+		
 		while(groupit.hasNext()){
 			Element group = (Element) groupit.next();
 			String rel = group.getChild("relationship_ref", mainNS).getAttributeValue("relationship");
 			Iterator<?> compit = group.getChildren("component_ref", mainNS).iterator();
+			
 			while(compit.hasNext()){
 				Element topcomp = (Element) compit.next();
-				processComponentRelationships(rel, topcomp);
+				processComponentGroupings(rel, topcomp);
 			}
 		}
 		
 		// Process the CellML connections
 		Iterator<?> conit = doc.getRootElement().getChildren("connection", mainNS).iterator();
+		
 		while(conit.hasNext()){
 			Element con = (Element) conit.next();
 			Element compmap = con.getChild("map_components", mainNS);
@@ -381,6 +351,7 @@ public class CellMLreader extends ModelReader {
 			FunctionalSubmodel sub2 = (FunctionalSubmodel) semsimmodel.getSubmodel(compmap.getAttributeValue("component_2"));
 			
 			Iterator<?> varconit = con.getChildren("map_variables", mainNS).iterator();
+			
 			while(varconit.hasNext()){
 				
 				Element varcon = (Element) varconit.next();
@@ -396,7 +367,9 @@ public class CellMLreader extends ModelReader {
 				MappableVariable encapsulatingvariable = null;
 				
 				if(sub1.getRelationshipSubmodelMap().containsKey("encapsulation")){
+					
 					for(Submodel sub : sub1.getRelationshipSubmodelMap().get("encapsulation")){
+						
 						if(sub==sub2){
 							encapsulatedsubmodel = sub2;
 							encapsulatedvariable = var2;
@@ -405,7 +378,9 @@ public class CellMLreader extends ModelReader {
 					}
 				}
 				if(sub2.getRelationshipSubmodelMap().containsKey("encapsulation")){
+					
 					for(Submodel sub : sub2.getRelationshipSubmodelMap().get("encapsulation")){
+						
 						if(sub==sub1){
 							encapsulatedsubmodel = sub1;
 							encapsulatedvariable = var1;
@@ -418,10 +393,12 @@ public class CellMLreader extends ModelReader {
 				MappableVariable outputvar = null;
 				
 				if(var1.getPublicInterfaceValue()!=null && var2.getPublicInterfaceValue()!=null){
+					
 					if( ! var1.getPublicInterfaceValue().equals("in") && var2.getPublicInterfaceValue().equals("in")){
 						inputvar = var1;
 						outputvar = var2;
 					}
+					
 					else if(var1.getPublicInterfaceValue().equals("in") && ! var2.getPublicInterfaceValue().equals("in")){
 						inputvar = var2;
 						outputvar = var1;
@@ -450,27 +427,40 @@ public class CellMLreader extends ModelReader {
 			}
 		}
 		
+		// If there's a variable called "time" in a component called "environment"
+		// set it as a solution domain for the other variables in the model
+		
+		String soldomname = "environment.time";
+		if(semsimmodel.containsDataStructure(soldomname)){
+			DataStructure soldomds = semsimmodel.getAssociatedDataStructure(soldomname);
+			soldomds.setIsSolutionDomain(true);
+			
+			for(DataStructure dstruct : semsimmodel.getAssociatedDataStructures()){
+				
+				if(dstruct != soldomds) dstruct.setSolutionDomain(soldomds);
+			}
+		}
+		
+		// Collect info about SemSim style submodels
+		rdfreader.getAllSemSimSubmodelAnnotations();
+		
 		// Strip the semsim-related content from the main RDF block
-		stripSemSimRelatedContentFromRDFblock(rdfblock.rdf);
-		semsimmodel.addAnnotation(new Annotation(SemSimRelation.CELLML_RDF_MARKUP, SemSimRDFreader.getRDFmodelAsString(rdfblock.rdf)));
+		AbstractRDFreader.stripSemSimRelatedContentFromRDFblock(rdfreader.rdf, semsimmodel);
+		String remainingrdf = AbstractRDFreader.getRDFmodelAsString(rdfreader.rdf,"RDF/XML-ABBREV");
+		semsimmodel.addAnnotation(new Annotation(SemSimRelation.CELLML_RDF_MARKUP, remainingrdf));
 		
 		return semsimmodel;
+		
 	}
 	
 	
-	// Collect singular annotation for model components
-//	private void collectSingularBiologicalAnnotationForSubmodel(FunctionalSubmodel submodel){
-//		if(submodel.getMetadataID()!=null){
-//			URI termURI = rdfblock.collectSingularBiologicalAnnotation(submodel);
-//			if(termURI!=null){
-//				ReferencePhysicalEntity rpe = new ReferencePhysicalEntity(termURI, termURI.toString());
-//				semsimmodel.addReferencePhysicalEntity(rpe);
-//				submodel.setSingularAnnotation(rpe);
-//			}
-//		}
-//	}
-	
-	private void processComponentRelationships(String rel, Element comp){
+	/**
+	 * Recursive function to read in the relationships between CellML components
+	 * (i.e. encapsulation and containment) 
+	 * @param rel The relationship type to process ("encapsulation" or "containment")
+	 * @param comp The CellML component to process
+	 */
+	private void processComponentGroupings(String rel, Element comp){
 		Submodel parentsubmodel = semsimmodel.getSubmodel(comp.getAttributeValue("component"));
 		Iterator<?> subcompit = comp.getChildren("component_ref", mainNS).iterator();
 		while(subcompit.hasNext()){
@@ -488,22 +478,32 @@ public class CellMLreader extends ModelReader {
 				// Connect the parent and child submodels
 				((FunctionalSubmodel)parentsubmodel).getRelationshipSubmodelMap().put(rel, valueset);
 				
+				parentsubmodel.addSubmodel(childsubmodel);
+				
 				// Iterate recursively
-				processComponentRelationships(rel, subcomp);
+				processComponentGroupings(rel, subcomp);
 			}
 		}
 	}
 	
+	
+	/**
+	 * Store the model's name, ID, and the PubMed ID of its reference
+	 * publication in a SemSim model
+	 * @param doc JDOM Document representing the CellML XML
+	 * @param semsimmodel The {@link SemSimModel} representing the model
+	 */
 	private void getModelNameAndIDAndPubMedId(Document doc, SemSimModel semsimmodel){
 		String ab = "";
 		if(doc.getRootElement()!=null){
 			String name = doc.getRootElement().getAttributeValue("name");
 			String id = doc.getRootElement().getAttributeValue("id", RDFNamespace.CMETA.createJdomNamespace());
 			if(name!=null && !name.equals("")){
-				semsimmodel.setModelAnnotation(Metadata.fullname, name);
+				semsimmodel.addAnnotation(new Annotation(SemSimRelation.MODEL_NAME, name));
 				semsimmodel.setName(name);
 			}
-			if(id!=null && !id.equals("")) semsimmodel.setModelAnnotation(Metadata.sourcemodelid, id);
+			if(id!=null && !id.equals(""))
+				semsimmodel.setMetadataID(id);
 			
 			// Try to get pubmed ID from RDF tags
 			if(doc.getRootElement().getChild("RDF", RDFNamespace.RDF.createJdomNamespace())!=null){
@@ -562,10 +562,16 @@ public class CellMLreader extends ModelReader {
 			// end documentation processing
 		}
 		if(ab!=null && !ab.equals(""))
-			semsimmodel.setModelAnnotation(Metadata.pubmedid, ab);
+			semsimmodel.addAnnotation(new Annotation(SemSimRelation.BQM_IS_DESCRIBED_BY,ab));
 	}
 	
 	
+	/**
+	 * Add the contents of the CellML model's "documentation" element as 
+	 * a model-level annotation on a SemSim model
+	 * @param doc JDOM Document representation of the CellML model
+	 * @param semsimmodel The SemSim model representation of the CellML model
+	 */
 	private void getDocumentation(Document doc, SemSimModel semsimmodel){
 		Element docel = doc.getRootElement().getChild("documentation", RDFNamespace.DOC.createJdomNamespace());
 		if(docel!=null){
@@ -575,61 +581,44 @@ public class CellMLreader extends ModelReader {
 	}
 	
 	
-	public static Element getRDFmarkupForElement(Element el){
-		return el.getChild("RDF", RDFNamespace.RDF.createJdomNamespace());
-	}
 	
 	
-	// Remove all semsim-related content from the main RDF block
-	// It gets replaced, if needed, on write out
-	private void stripSemSimRelatedContentFromRDFblock(Model rdf){
-		Iterator<Statement> stit = rdf.listStatements();
-		List<Statement> listofremovedstatements = new ArrayList<Statement>();
-		String modelns = semsimmodel.getNamespace();
-		while(stit.hasNext()){
-			Statement st = (Statement) stit.next();
-			RDFNode obnode = st.getObject();
-			if(obnode instanceof Resource){
-				Resource obres = (Resource)obnode;
-				if(obres.getNameSpace()!=null){
-					if(obres.getNameSpace().equals(modelns)){
-						listofremovedstatements.add(st);
-					}
-				}
-			}
-			Resource subres = st.getSubject();
-				if(subres.getNameSpace()!=null){
-					if(subres.getNameSpace().equals(modelns)){
-						listofremovedstatements.add(st);
-					}
-				}
-			Property pred = st.getPredicate();
-			if(pred.getNameSpace()!=null){
-				if(pred.getNameSpace().equals(RDFNamespace.SEMSIM.getNamespaceasString())){
-					listofremovedstatements.add(st);
-				}
-			}
-		}
-		rdf.remove(listofremovedstatements);
-	}
-		
 	
-	// Wraps a cloned version of the mathML element that solves a component variable inside a parent mathML element
+	/**
+	 * Wraps a cloned version of the mathML element that solves a CellML variable inside a parent mathML element 
+	 * @param cvarname The name of the CellMl variable
+	 * @param componentMathMLlist A list of MathML JDOM elements associated with the variable's parent component
+	 * @return A cloned version of the mathML element that solves for the input CellML variable
+	 */
 	public static Element getMathMLforOutputVariable(String cvarname, List<?> componentMathMLlist){
-		Element mathmlheadel = new Element("math", RDFNamespace.MATHML.createJdomNamespace());
+		
+		Element mathmlheadel = new Element("math", RDFNamespace.MATHML.getNamespaceAsString());
 		Iterator<?> compmathmlit = componentMathMLlist.iterator();
 		Element childel = getElementForOutputVariableFromComponentMathML(cvarname, compmathmlit);
+				
 		if(childel!=null){
-			mathmlheadel.addContent((Element)childel.clone());
+			
+			Element childelclone = (Element)childel.clone();
+			childelclone.removeNamespaceDeclaration(Namespace.getNamespace(RDFNamespace.MATHML.getNamespaceAsString()));
+			mathmlheadel.addContent(childelclone);
+			
 			return mathmlheadel;
 		}
 		return null;
 	}
 	
 	
-	// Returns the mathML Element representing the equation for the specified variable
+	/**
+	 * Get the MathML JDOM Element representing the equation for a specified CellML variable
+	 * @param cvarname The name of the CellML variable
+	 * @param compmathmlit Iterator of all MathML elements associated with the variable's
+	 * parent component in the CellML model
+	 * @return The MathML JDOM Element representing the equation for the input CellML variable
+	 */
 	public static Element getElementForOutputVariableFromComponentMathML(String cvarname, Iterator<?> compmathmlit){
+		
 		Element childel = null;
+		
 		while(compmathmlit.hasNext()){
 			Element MathMLelement = (Element) compmathmlit.next();
 			Iterator<?> applyit = MathMLelement.getChildren("apply", RDFNamespace.MATHML.createJdomNamespace()).iterator();
@@ -645,6 +634,7 @@ public class CellMLreader extends ModelReader {
 					}
 				}
 				else if(subappel.getName().equals("ci")){
+					
 					if(subappel.getText().trim().equals(cvarname))
 						return childel;
 				}
@@ -654,6 +644,13 @@ public class CellMLreader extends ModelReader {
 	}
 	
 	
+	/**
+	 * Determine whether a given CellML variable is solved using an ordinary differential equation
+	 * @param cvarname The name of the CellML variable
+	 * @param componentMathMLlist List of JDOM MathML Elements associated with
+	 * the variable's parent component
+	 * @return Whether the input CellML variable is solved using an ordinary differential equation
+	 */
 	protected static Boolean isSolvedbyODE(String cvarname, List<?> componentMathMLlist){
 		Iterator<?> compmathmlit = componentMathMLlist.iterator();
 		Element childel = null;
@@ -678,7 +675,17 @@ public class CellMLreader extends ModelReader {
 		return false;
 	}
 	
-	protected static void whiteBoxFunctionalSubmodelEquations(Element varmathmlel, String compname, SemSimModel semsimmodel, DataStructure cvar){
+	
+	/**
+	 * Examines the computational inputs required to compute a given model {@link DataStructure}
+	 * and stores that information in a SemSim model. 
+	 * @param varmathmlel JDOM Element representing the MathML used to compute the data structure
+	 * @param compname The name of the data structure's parent component (as in CellML models)
+	 * @param semsimmodel The parent model of the data structure
+	 * @param cvar The {@link DataStructure} in the SemSim model to process
+	 */
+	protected static void whiteBoxFunctionalSubmodelEquation(Element varmathmlel, String compname, SemSimModel semsimmodel, DataStructure cvar){
+		
 		Iterator<?> conit = varmathmlel.getDescendants();
 		while(conit.hasNext()){
 			Content con = (Content) conit.next();
@@ -700,7 +707,7 @@ public class CellMLreader extends ModelReader {
 						}
 						
 						// Add the input DataStructure
-						if(inputds!=null){
+						if(inputds != null && ! cvar.getComputationInputs().contains(inputds)){
 							cvar.getComputation().addInput(inputds);
 						}
 					}
@@ -710,7 +717,15 @@ public class CellMLreader extends ModelReader {
 	}
 	
 	
-	public static String getRHSofDataStructureEquation(String varmathml, String varname){
+	/**
+	 * Get the right-hand side of the equation that solves a given data structure
+	 * in the model.
+	 * @param varmathml String representation of the MathML used to compute the
+	 * data structure's values
+	 * @param varname The name of the data structure
+	 * @return String representation of the right-hand side of the equation that solves for the given data structure
+	 */
+	protected static String getRHSofDataStructureEquation(String varmathml, String varname){
 		
 		String varmathmlRHS = SemSimUtil.getRHSofMathML(varmathml, varname);
 		ASTNode ast_result = JSBML.readMathMLFromString(varmathmlRHS);
@@ -719,6 +734,19 @@ public class CellMLreader extends ModelReader {
 	}
 	
 	
+	/**
+	 * @param el A JDOM Element in an XML-based model
+	 * @return The RDF child Element for the input Element
+	 */
+	protected static Element getRDFmarkupForElement(Element el){
+		return el.getChild("RDF", RDFNamespace.RDF.createJdomNamespace());
+	}
+	
+	
+	/**
+	 * @param str An input String
+	 * @return UTF-8 formatted version of the input String
+	 */
 	protected static String getUTFformattedString(String str){
 		try {
 			return new String(str.getBytes(), "UTF-8");
@@ -727,5 +755,7 @@ public class CellMLreader extends ModelReader {
 			return null;
 		}
 	}
+	
+
 }
 

@@ -1,9 +1,9 @@
 package semsim.writing;
 
-import java.io.File;
-import java.net.URI;
+import java.io.OutputStream;
 import java.util.ArrayList;
-//import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -23,13 +23,22 @@ import JSim.data.NamedVal;
 import JSim.util.UtilIO;
 import JSim.util.Xcept;
 
+/**
+ * Class for writing out an MML-encoded model for simulation in JSim
+ * @author mneal
+ *
+ */
 public class MMLwriter extends ModelWriter{ 
+	
+	private Map<DataStructure,String> dataStructureAndEquationMap = new HashMap<DataStructure,String>();
+	private Map<String,String> renamedDataStructureMap = new HashMap<String,String>();
 
 	public MMLwriter(SemSimModel model) {
 		super(model);
 	}
 	
-	public String writeToString(){	
+	@Override
+	public String encodeModel() {
 		String output = "";
 
 		// If the SemSim model contains Functional Submodels ala CellML models, output the CellML code first,
@@ -37,7 +46,7 @@ public class MMLwriter extends ModelWriter{
 		// NEED BETTER ERROR HANDLING FOR CellML 1.1 models
 		if(semsimmodel.getFunctionalSubmodels().size()>0){
 			System.out.println("Using CellML as intermediary language");
-			String tempcontent = new CellMLwriter(semsimmodel).writeToString();
+			String tempcontent = new CellMLwriter(semsimmodel).encodeModel();
 			String srcText = UtilIO.readText(tempcontent.getBytes());
 			int srcType = ASModel.TEXT_CELLML;
 		    int destType = ASModel.TEXT_MML;
@@ -74,19 +83,23 @@ public class MMLwriter extends ModelWriter{
 		nonfundamentalunits.addAll(semsimmodel.getUnits());	
 
 		for (UnitOfMeasurement unit : semsimmodel.getUnits()) {
+			
 			if(unit.hasCustomDeclaration()){
-				String dec = unit.getCustomDeclaration();
+				String dec = formatUnitForMML(unit, unit.getCustomDeclaration());
+				
 				if (dec.trim().endsWith("fundamental;")) {
 					output = output.concat(dec + "\n");
 					nonfundamentalunits.remove(unit);
 				}
 			}
 		}
+		
 		for (UnitOfMeasurement unit : nonfundamentalunits) {
-			String code = unit.getComputationalCode();
+			String code = formatUnitForMML(unit, unit.getComputationalCode());
 			
 			if (unit.hasCustomDeclaration()) {
-				output = output.concat(unit.getCustomDeclaration() + "\n");
+				String custdec = formatUnitForMML(unit, unit.getCustomDeclaration());
+				output = output.concat(custdec + "\n");
 			}
 			// If going from a CellML file with units not recognized by JSim, declare them in the output
 			else{
@@ -99,27 +112,74 @@ public class MMLwriter extends ModelWriter{
 					}
 				}
 
-				if(!sslib.jsimHasUnit(code) && !code.equals("") && !testprefixed
-						&& !code.equals("dimensionless") && !code.contains("*") && !code.contains("/") && !code.contains("^")){
+				if(!sslib.jsimHasUnit(code) && ! code.equals("") &&  ! testprefixed
+						&& ! code.equals("dimensionless") && ! code.contains("*") && ! code.contains("/") && ! code.contains("^")){
 					output = output.concat("unit " + code + " = dimensionless;\n");  // Hack until units stuff w/Jsim gets sorted
 				}
 			}
 		}
 		output = output.concat("\nmath MODEL{\n");
 
+		// Deal with JSim-specific naming conventions:
+		// If a data structure starts with "JS" it needs to be renamed
+		ArrayList<String> alldsarray = new ArrayList<String>(semsimmodel.getDataStructureNames());
+
+		for(String dsname : alldsarray){
+
+			DataStructure ds = semsimmodel.getAssociatedDataStructure(dsname);
+			String origcode = ds.getComputation().getComputationalCode();
+
+			// Rename codewords that start with "JS"
+			if(dsname.startsWith("JS")){
+				
+				String newname = dsname;
+				
+				while(semsimmodel.getAssociatedDataStructure(newname) != null){
+					newname = dsname.replaceFirst("JS", "xJS");
+				}
+				renamedDataStructureMap.put(dsname, newname);
+				String newcode = SemSimUtil.replaceCodewordsInString(origcode, newname, dsname);
+				dataStructureAndEquationMap.put(ds, newcode);
+
+				// Replace the old variable name with the new one in any equations that use it
+				for(DataStructure dependentds : ds.getUsedToCompute()){
+					String origdepcode = dependentds.getComputation().getComputationalCode();
+					String neweq = SemSimUtil.replaceCodewordsInString(origdepcode, newname, dsname);
+					dataStructureAndEquationMap.put(dependentds, neweq);
+				}
+			}
+			
+			// Replace occurrences of "pi", which is a SBML reserved codeword, with "PI"
+			// as long as there isn't a variable named pi in the model
+			if( ! alldsarray.contains("pi") && !origcode.isEmpty()){
+				String code = dataStructureAndEquationMap.containsKey(ds) ? dataStructureAndEquationMap.get(ds) : origcode;				
+				String repicode = SemSimUtil.replaceCodewordsInString(code, "PI", "pi", SemSimUtil.regexQualifier.RELUCTANT);
+				dataStructureAndEquationMap.put(ds, repicode);
+			}
+		}
+		
 		// Print the Domain declarations
 		for (DataStructure domaindatastr : semsimmodel.getSolutionDomains()) {
-			String name = domaindatastr.getName();
+			
+			String name = getJSimFormattedName(domaindatastr);
 					
 			// Domains are without units. Unit conversion turned off in outputted MML.
-			output = output.concat("\trealDomain " + name + " " + domaindatastr.getUnit().getComputationalCode() + ";");
+			UnitOfMeasurement soldomunit = domaindatastr.getUnit();
 			
-			// if the solution domain parameters aren't included in the
-			// ontology, include them in the code output
+			String soldomunitname = ""; 
+			if (soldomunit!= null) {
+				soldomunitname = formatUnitForMML(soldomunit, soldomunit.getComputationalCode());
+			}
+			
+			output = output.concat("\trealDomain " + name + " " + soldomunitname + ";");
+			
+			// if the solution domain parameters aren't included in the ontology, include them in the code output
 			String[] vals = new String[]{"0","100","0.1"};
 			String[] suffixes = new String[]{".min",".max",".delta"};
+			
 			for(int y=0;y<vals.length;y++){
-				if(!semsimmodel.containsDataStructure(name + suffixes))
+				
+				if( ! semsimmodel.containsDataStructure(name + suffixes))
 					output = output.concat(" extern " + name + suffixes[y] + ";"); 
 				else
 					output = output.concat(" " + semsimmodel.getAssociatedDataStructure(name + suffixes[y]).getComputation().getComputationalCode());
@@ -134,128 +194,166 @@ public class MMLwriter extends ModelWriter{
 		ArrayList<String> decnames = new ArrayList<String>();
 		for(DataStructure dec : semsimmodel.getDecimals()) decnames.add(dec.getName());
 		
-//		CaseInsensitiveComparator byVarName = new CaseInsensitiveComparator();
-//		Collections.sort(decnames, byVarName);
-		
 		for (String onedecimalstr : decnames) {
 			Decimal onedecimal = (Decimal) semsimmodel.getAssociatedDataStructure(onedecimalstr);
 			
-			// If the codeword is declared
-			if (onedecimal.isDeclared() && !onedecimal.isSolutionDomain()
-					// If the codeword is part of a solution domain declaration, don't declare it.
-					&& !domainnames.contains(onedecimal.getName().replace(".delta", ""))
-					&& !domainnames.contains(onedecimal.getName().replace(".min", ""))
-					&& !domainnames.contains(onedecimal.getName().replace(".max",""))) {
+			// If the codeword is declared, is not a solution domain, and is not a run-time solution domain parameter
+			if (isDeclaredDependentVariable(onedecimal)){
+					
 				String unitcode = "";
 				
-				if(onedecimal.getUnit()!=null){
-					unitcode = onedecimal.getUnit().getComputationalCode();
-				}
+				if(onedecimal.getUnit() != null) 
+					unitcode = getUnitCodeForVariable(onedecimal);
+				
 				String declaration = "real";
+				
 				// If the codeword is a realState variable
-				if (onedecimal.isDiscrete()) {
-					declaration = "realState";
-				}
+				if (onedecimal.isDiscrete()) declaration = "realState";
 				
 				// If the codeword is an extern variable
 				Computation comp = onedecimal.getComputation();
-				if(comp!=null){
-					if(comp.getComputationalCode()==null){
+				
+				if(comp != null){
+					
+					if(comp.getComputationalCode().isEmpty()) 
 						declaration = "extern real";
-					}
+					
 				}
 				else if(onedecimal instanceof MappableVariable) declaration = "real";
 
+				String name = getJSimFormattedName(onedecimal);
+				
 				if (semsimmodel.getSolutionDomainNames().size() == 1) {
-					for (String oned : semsimmodel.getSolutionDomainNames()) {
-						output = output.concat("\t" + declaration + " " + onedecimal.getName() + "(" + oned + ") " + unitcode + ";" + "\n");
-					}
-				} else {
-					output = output.concat("\t" + declaration + " " + onedecimal.getName() + " " + unitcode + ";" + "\n");
-				}
+					
+					for (String oned : semsimmodel.getSolutionDomainNames())
+						output = output.concat("\t" + declaration + " " + name + "(" + oned + ") " + unitcode + ";" + "\n");
+					
+				} 
+				else output = output.concat("\t" + declaration + " " + name + " " + unitcode + ";" + "\n");
 			}
 		}
 
 		// Print the Integer variable declarations
 		ArrayList<String> intnames = new ArrayList<String>();
-		for(DataStructure integer : semsimmodel.getIntegers()) intnames.add(integer.getName());
 		
-//		Collections.sort(intnames, byVarName);
+		for(DataStructure integer : semsimmodel.getIntegers()) intnames.add(integer.getName());
 		
 		for (String oneintstr : intnames) {
 			SemSimInteger oneint = (SemSimInteger) semsimmodel.getAssociatedDataStructure(oneintstr);
-			if (oneint.isDeclared() && !oneint.isSolutionDomain()
-					&& !domainnames.contains(oneint.getName().replace(".delta", ""))
-					&& !domainnames.contains(oneint.getName().replace(".min", ""))
-					&& !domainnames.contains(oneint.getName().replace(".max",""))) {
+			
+			if (isDeclaredDependentVariable(oneint)) {
 				String unitcode = "";
-				if(oneint.getUnit()!=null){
-					unitcode = oneint.getUnit().getComputationalCode();
-				}
+				
+				if(oneint.getUnit() != null) unitcode = getUnitCodeForVariable(oneint);
+				
 				String declaration = "int";
-				if (oneint.isDiscrete()) {
-					declaration = "intState";
-				}
+				
+				if (oneint.isDiscrete()) declaration = "intState";
+				
 				if (oneint.getComputation().getComputationalCode().equals("")) {
-					if (domainnames.contains(oneint.getName().replace(".delta", ""))
-							|| domainnames.contains(oneint.getName().replace(".min",""))
-							|| domainnames.contains(oneint.getName().replace(".max",""))) {
+					
+					if (semsimmodel.getSolutionDomainBoundaries().contains(oneint))	
 						declaration = "extern";
-					} else {
-						declaration = "extern int";
-					}
+					else declaration = "extern int";
+					
 				}
 
+				String name = getJSimFormattedName(oneint);
+				
 				if (domainnames.size() == 1) {
 					String base = semsimmodel.getNamespace();
+					
 					for (String onedom1 : domainnames) {
 						onedom1 = onedom1.replace(base, "");
-						output = output.concat("\t" + declaration + " " + oneint.getName()
-								+ "(" + onedom1.replace(base, "") + ") "
+						output = output.concat("\t" + declaration + " " + name + "(" + onedom1.replace(base, "") + ") "
 								+ unitcode + ";" + "\n");
 					}
 				} 
-				else {
-					output = output.concat("\t" + declaration + " " + oneint.getName() + " "
-							+ unitcode + ";" + "\n");
-				}
+				else output = output.concat("\t" + declaration + " " + name + " " + unitcode + ";" + "\n");
 			}
 		}
+		
+		//TODO: Need to print out other JSim data structure types like choice variables
 
 		// Print the Initial conditions for the state variables
 		output = output.concat("\n\n\t// Boundary conditions\n\n");
+				
+		for (String dsname : alldsarray) {
+			DataStructure ds = semsimmodel.getAssociatedDataStructure(dsname);
+						
+			if (ds.hasStartValue() && ds.hasSolutionDomain()) {
+				output = output.concat("\twhen (" + ds.getSolutionDomain().getName()
+						+ " = " + ds.getSolutionDomain().getName() + ".min){ " 
+						+ getJSimFormattedName(ds) + " = " + ds.getStartValue() + "; }\n");
+			}
+		}
 		
-		ArrayList<String> alldsarray = new ArrayList<String>(semsimmodel.getDataStructureNames());
-		
-//		Collections.sort(alldsarray, byVarName);
-		
-		for (String onedsstr : alldsarray) {
-			DataStructure onedatastr = semsimmodel.getAssociatedDataStructure(onedsstr);
-			if (onedatastr.hasStartValue() && onedatastr.hasSolutionDomain()) {
-				output = output.concat("\twhen (" + onedatastr.getSolutionDomain().getName()
-						+ " = " + onedatastr.getSolutionDomain().getName() + ".min){ " 
-						+ onedatastr.getName() + " = " + onedatastr.getStartValue() + "; }\n");
+		// Local parameters in SBML models are prefixed with the reaction 
+		// submodel name. When writing out equations that use the local parameters,
+		// they must be renamed to include the prefix.
+		for(String dsname : alldsarray){
+			
+			DataStructure ds = semsimmodel.getAssociatedDataStructure(dsname);			
+			if(dsname.contains(".") && ! semsimmodel.getSolutionDomainBoundaries().contains(ds)){
+
+				String fullname = ds.getName();
+				String localname = fullname.substring(fullname.indexOf(".") + 1, fullname.length());
+				
+				for(DataStructure dependentds : ds.getUsedToCompute()){
+					String code = dependentds.getComputation().getComputationalCode();
+					
+					// If the equation for the dependent ds was already processed before, retrieve it
+					// so we can continue editting it
+					if(dataStructureAndEquationMap.containsKey(dependentds)) code = dataStructureAndEquationMap.get(dependentds);
+					
+					code = SemSimUtil.replaceCodewordsInString(code, fullname, localname);
+					dataStructureAndEquationMap.put(dependentds, code);
+				}
 			}
 		}
 
 		// Print the Equations
 		output = output.concat("\n\n\t// Equations\n\n");
 		
-		// Logic for this might be a little different than previous versions
 		for (String onedsstr : alldsarray) {
 			DataStructure ds = semsimmodel.getAssociatedDataStructure(onedsstr);
-			if (ds.isDeclared() && !ds.isSolutionDomain() 
-					&& !domainnames.contains(ds.getName().replace(".delta", ""))
-					&& !domainnames.contains(ds.getName().replace(".min", ""))
-					&& !domainnames.contains(ds.getName().replace(".max",""))
-					&& ds.getComputation().getComputationalCode()!=null){
+			
+			if (isDeclaredDependentVariable(ds)
+					&& !ds.getComputation().getComputationalCode().isEmpty()){
 				
 				String code = ds.getComputation().getComputationalCode();
+				
+				// If the equation was reformatted to account for variables with submodel prefixes,
+				// retrieve the new equation
+				if(dataStructureAndEquationMap.containsKey(ds)) code = dataStructureAndEquationMap.get(ds);
+				
+				// If the data structure is solved with an ODE and is not discrete, and its computational code
+				// isn't formatted for MML, format the LHS of the equation				
+				if( ds.hasStartValue()){
+					
+					if ( ! ds.isDiscrete()){
+						
+						String soldomname = semsimmodel.getSolutionDomainNames().toArray(new String[]{})[0];
+						String LHS = getJSimFormattedName(ds) + ":" + soldomname;
+						
+						if( ! code.startsWith(LHS)){
+							String rightfrag = code.substring(code.indexOf("="));
+							code = LHS + " " + rightfrag;
+						}
+					}
+					
+					else{} // TODO: For now, realState variables that update discretely have all the necessary 
+					// parts of their conditional statements in ds.getComputation().getComputationalCode(). When we have a
+					// MathML to MML converter, we can build the conditional statements from the MathML bits within the Event
+					// and EventAssignment instances associated with the realState's Computation.
+				}
+			
 				output = output.concat("\t" + code + getLineEnd(code) + "\n");
 			}
 		}
 		
-		if(!semsimmodel.getRelationalConstraints().isEmpty()) output = output.concat("\n\n\t// Relational constraints\n\n");
+		if( ! semsimmodel.getRelationalConstraints().isEmpty()) output = output.concat("\n\n\t// Relational constraints\n\n");
+		
 		for(RelationalConstraint rel : semsimmodel.getRelationalConstraints()){
 			output = output.concat("\t" + rel.getComputationalCode() + getLineEnd(rel.getComputationalCode()) + "\n");
 		}
@@ -268,33 +366,95 @@ public class MMLwriter extends ModelWriter{
 		output = output.concat("/*\n");
 		output = output.concat("CODEWORD DEFINITIONS\n");
 		output = output.concat("-------------------------------\n");
+		
 		for (String onedsstr : alldsarray) {
 			DataStructure ds = semsimmodel.getAssociatedDataStructure(onedsstr);
 			output = output.concat(ds.getName() + "\n");
-			if(ds.getDescription()!=null){
+			
+			if(ds.getDescription()!=null)
 				output = output.concat("   " + ds.getDescription() + "\n");
-			}
+			
 			output = output.concat("\n");
 		}
 		output = output.concat("-------------------------------\n");
 		output = output.concat("*/\n");
-
 		return output;
+	}
+	
+	@Override
+	public boolean  writeToStream(OutputStream stream) {
+		
+		String output = encodeModel();
+		if (output == null) return false;
+		
+		this.commitStringtoStream(stream, output);
+
+		return true;
 
 	}
 	
+	
+	/**
+	 * If a data structure's name needed to be re-formatted for MML code, 
+	 * retrieve the new name
+	 * @param ds A data structure 
+	 * @return The MML-valid name of the data structure 
+	 */
+	private String getJSimFormattedName(DataStructure ds) {
+		return renamedDataStructureMap.containsKey(ds.getName()) ? renamedDataStructureMap.get(ds.getName()) : ds.getName();
+	}
+
+	
+	/**
+	 * @param code Line of MML code to check
+	 * @return If the line of MML code ends in a right curly brace, 
+	 * return an empty string. Otherwise return a semicolon.
+	 */
 	private String getLineEnd(String code){
-		if (code.endsWith("}")) {
-			return "";
-		}
+		
+		if (code.endsWith("}"))	return "";
+		
 		return ";";
 	}
 	
-	public void writeToFile(File destination){
-		SemSimUtil.writeStringToFile(writeToString(), destination);
+	
+	/**
+	 * @param ds A {@link DataStructure}
+	 * @return The MML-valid name of the data structure's physical unit 
+	 */
+	private String getUnitCodeForVariable(DataStructure ds){
+		UnitOfMeasurement unit = ds.getUnit();
+		return formatUnitForMML(unit, unit.getComputationalCode());
 	}
 	
-	public void writeToFile(URI destination){
-		SemSimUtil.writeStringToFile(writeToString(), new File(destination));
+	
+	/**
+	 * @param unit A physical unit
+	 * @param stringtoformat The MML code associated with the unit declaration
+	 * @return Unit name formatted so it is MML-valid
+	 */
+	private String formatUnitForMML(UnitOfMeasurement unit, String stringtoformat){
+		String unitname = unit.getName();
+		String newname = unitname.replace(" ", "_");
+		String formatted = stringtoformat;
+		return formatted.replace(unitname, newname);
 	}
+	
+	
+	/**
+	 * @param ds A data structure
+	 * @return Whether the data structure is declared, is not a solution domain and 
+	 * is not used to set the boundaries of a solution domain (i.e. doesn't end
+	 * with [solutiondomain].delta, [solutiondomain].max, or [solutiondomain].min)
+	 */
+	private boolean isDeclaredDependentVariable(DataStructure ds){
+		return ds.isDeclared() && ! ds.isSolutionDomain() && ! semsimmodel.getSolutionDomainBoundaries().contains(ds);
+	}
+
+	@Override
+	public AbstractRDFwriter getRDFwriter() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

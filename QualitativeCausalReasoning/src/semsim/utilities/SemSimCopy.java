@@ -1,10 +1,10 @@
 package semsim.utilities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import semsim.annotation.Annotation;
@@ -12,33 +12,36 @@ import semsim.model.collection.FunctionalSubmodel;
 import semsim.model.collection.SemSimModel;
 import semsim.model.collection.Submodel;
 import semsim.model.computational.Computation;
+import semsim.model.computational.Event;
+import semsim.model.computational.EventAssignment;
+import semsim.model.computational.RelationalConstraint;
 import semsim.model.computational.datastructures.DataStructure;
-import semsim.model.computational.datastructures.Decimal;
-import semsim.model.computational.datastructures.MMLchoice;
-import semsim.model.computational.datastructures.MappableVariable;
-import semsim.model.computational.datastructures.SemSimInteger;
 import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
 import semsim.model.physical.PhysicalEntity;
+import semsim.model.physical.PhysicalForce;
+import semsim.model.physical.PhysicalModelComponent;
 import semsim.model.physical.PhysicalProcess;
 import semsim.model.physical.object.CompositePhysicalEntity;
 import semsim.model.physical.object.CustomPhysicalEntity;
+import semsim.model.physical.object.CustomPhysicalForce;
 import semsim.model.physical.object.CustomPhysicalProcess;
 import semsim.model.physical.object.ReferencePhysicalEntity;
 import semsim.model.physical.object.ReferencePhysicalProcess;
 /**
- * Methods for performing a deep copy the structures in a SemSim model. This does NOT
+ * Methods for performing a deep copy of the structures in a SemSim model. This does NOT
  * create an exact copy, use the 'clone' method in SemSimModel instead.
  * @author Christopher
  *
  */
 public class SemSimCopy {
-	HashMap<PhysicalEntity, PhysicalEntity> entities = new HashMap<PhysicalEntity, PhysicalEntity>();
-	HashMap<PhysicalProcess, PhysicalProcess> procs = new HashMap<PhysicalProcess, PhysicalProcess>();
-	HashMap<UnitOfMeasurement, UnitOfMeasurement> unitmap = new HashMap<UnitOfMeasurement, UnitOfMeasurement>();
+	HashMap<PhysicalEntity, PhysicalEntity> entitiesmap = new HashMap<PhysicalEntity, PhysicalEntity>();
+	HashMap<PhysicalProcess, PhysicalProcess> processesmap = new HashMap<PhysicalProcess, PhysicalProcess>();
+	HashMap<PhysicalForce, PhysicalForce> forcesmap = new HashMap<PhysicalForce,PhysicalForce>();
+	HashMap<UnitOfMeasurement, UnitOfMeasurement> unitsmap = new HashMap<UnitOfMeasurement, UnitOfMeasurement>();
 	LinkedHashMap<DataStructure, DataStructure> dsmap = new LinkedHashMap<DataStructure, DataStructure>();
-	HashMap<Computation, Computation> compmap = new HashMap<Computation, Computation>();
-	LinkedHashMap<Submodel, Submodel> smmap = new LinkedHashMap<Submodel, Submodel>();
+	HashMap<Event, Event> eventsmap = new HashMap<Event, Event>();
+	LinkedHashMap<Submodel, Submodel> submodelsmap = new LinkedHashMap<Submodel, Submodel>();
 	
 	SemSimModel modeltocopy;
 	SemSimModel destmodel;
@@ -49,32 +52,40 @@ public class SemSimCopy {
 		copySemSimModelStructures();
 	}
 	
-	/**
-	 * Method for copying the physical and computational components from one model to another. 
-	 * @param modeltocopy
-	 * @param destmodel
-	 */
+	/** Copy the physical and computational components from one model to another. */
 	private void copySemSimModelStructures() {
 		copyPhysicalEntities(modeltocopy);
-		destmodel.setPhysicalEntities(new HashSet<PhysicalEntity>(entities.values()));
+		destmodel.setPhysicalEntities(new HashSet<PhysicalEntity>(entitiesmap.values()));
 		
 		copyPhysicalProcesses(modeltocopy);
-		destmodel.setPhysicalProcesses(new HashSet<PhysicalProcess>(procs.values()));
+		destmodel.setPhysicalProcesses(new HashSet<PhysicalProcess>(processesmap.values()));
+		
+		copyPhysicalForces(modeltocopy);
+		destmodel.setPhysicalForces(new HashSet<PhysicalForce>(forcesmap.values()));
 		
 		copyUnits();
-		destmodel.setUnits(new HashSet<UnitOfMeasurement>(unitmap.values()));
+		destmodel.setUnits(new HashSet<UnitOfMeasurement>(unitsmap.values()));
 		
 		copyDataStructures(modeltocopy);
 		destmodel.setAssociatedDataStructures(new ArrayList<DataStructure>(dsmap.values()));
 		
 		copySubModels();
-		destmodel.setSubmodels(new ArrayList<Submodel>(smmap.values()));
-		remapSubmodels();
+		destmodel.setSubmodels(submodelsmap.values());
+		remap();
 		
-		copyComputations();
+		copyEvents();
+		destmodel.setEvents(new ArrayList<Event>(eventsmap.values()));
+				
+		copyRelationalConstraints();
+		
 	}
 
-	public static Set<Annotation> copyAnnotations(Set<Annotation> annstocopy) {
+	
+	/**
+	 * @param annstocopy A set of {@link Annotation} objects
+	 * @return A copy of a set of {@link Annotation} objects
+	 */
+	public static Set<Annotation> copyAnnotations(Collection<Annotation> annstocopy) {
 		Set<Annotation> annset = new HashSet<Annotation>();
 		for (Annotation ann : annstocopy) {
 			annset.add(new Annotation(ann));
@@ -83,55 +94,96 @@ public class SemSimCopy {
 		return annset;
 	}
 	
+	
+	/**
+	 * Copy physical entities present in a SemSimModel
+	 * @param modeltocopy The model containing physical entities to copy
+	 */
 	private void copyPhysicalEntities(SemSimModel modeltocopy) {
-		for (ReferencePhysicalEntity rpe : modeltocopy.getReferencePhysicalEntities()) {
-			entities.put(rpe,rpe);
-		}
-		for (CustomPhysicalEntity cupe : modeltocopy.getCustomPhysicalEntities()) {
-			entities.put(cupe, new CustomPhysicalEntity(cupe));
-		}
+		for (ReferencePhysicalEntity rpe : modeltocopy.getReferencePhysicalEntities())
+			entitiesmap.put(rpe,rpe);
+		
+		for (CustomPhysicalEntity cupe : modeltocopy.getCustomPhysicalEntities())
+			entitiesmap.put(cupe, new CustomPhysicalEntity(cupe));
+		
 		for (CompositePhysicalEntity cpe : modeltocopy.getCompositePhysicalEntities()) {
 			CompositePhysicalEntity newcpe = new CompositePhysicalEntity(cpe);
 			ArrayList<PhysicalEntity> pes = new ArrayList<PhysicalEntity>();
+			
 			for (PhysicalEntity pe : cpe.getArrayListOfEntities()) {
-				if (!entities.containsKey(pe)) {
-					if (pe.hasPhysicalDefinitionAnnotation()) {
-						entities.put(pe, pe);
-					}
-					else {
-						entities.put(pe, new CustomPhysicalEntity((CustomPhysicalEntity) pe));
-					}
+				
+				if (!entitiesmap.containsKey(pe)) {
+					
+					if (pe.hasPhysicalDefinitionAnnotation())
+						entitiesmap.put(pe, pe);
+					else
+						entitiesmap.put(pe, new CustomPhysicalEntity((CustomPhysicalEntity) pe));
 				}
-				pes.add(entities.get(pe));
+				pes.add(entitiesmap.get(pe));
 			}
 			newcpe.setArrayListOfEntities(pes);
-			entities.put(cpe, newcpe);
+			entitiesmap.put(cpe, newcpe);
 		}
 	}
 	
+	
+	/**
+	 * Copy physical processes present in a SemSimModel
+	 * @param modeltocopy The SemSimModel containing processes to copy
+	 */
 	private void copyPhysicalProcesses(SemSimModel modeltocopy) {		
 		for (ReferencePhysicalProcess rpp : modeltocopy.getReferencePhysicalProcesses()) {
-			procs.put(rpp,rpp);
+			processesmap.put(rpp,rpp);
 		}
 		for (CustomPhysicalProcess cpp : modeltocopy.getCustomPhysicalProcesses()) {
 			CustomPhysicalProcess newcpp = new CustomPhysicalProcess(cpp);
 			for (PhysicalEntity part : cpp.getParticipants()) {
-				newcpp.replaceParticipant(part, entities.get(part));
+				PhysicalEntity newpart = entitiesmap.get(part);
+				if (newpart==null) {
+					
+				}
+				
+				newcpp.replaceParticipant(part, newpart);
 			}
-			procs.put(cpp, newcpp);
+			processesmap.put(cpp, newcpp);
 		}
-		
 	}
 	
+	
+	/**
+	 * Copy physical forces present in a SemSimModel
+	 * @param modeltocopy The SemSimModel containing processes to copy
+	 */
+	private void copyPhysicalForces(SemSimModel modeltocopy){
+		for (CustomPhysicalForce cpf : modeltocopy.getCustomPhysicalForces()) { 
+
+			CustomPhysicalForce newcpf = new CustomPhysicalForce(cpf);
+			for (PhysicalEntity part : cpf.getParticipants()) {
+				
+				PhysicalEntity newpart = entitiesmap.get(part);
+				
+				if (newpart==null) {}
+				
+				newcpf.replaceParticipant(part, newpart);
+			}
+			forcesmap.put(cpf, newcpf);
+		}
+	}
+	
+	
+	/** Copy in units */
 	private void copyUnits() {		
 		HashMap<UnitFactor, UnitFactor> ufactormap = new HashMap<UnitFactor, UnitFactor>();
+		
 		for (UnitOfMeasurement old : modeltocopy.getUnits()) {
 			UnitOfMeasurement newunit = new UnitOfMeasurement(old);
-			unitmap.put(old, newunit);
+			unitsmap.put(old, newunit);
 			
 			HashSet<UnitFactor> ufset = new HashSet<UnitFactor>();
+			
 			for (UnitFactor uf : newunit.getUnitFactors()) {
 				UnitFactor newuf;
+				
 				if (ufactormap.containsKey(uf)) {
 					newuf = ufactormap.get(uf);
 				}
@@ -147,155 +199,121 @@ public class SemSimCopy {
 		}
 		//Set unit factor base units using the new units
 		for (UnitFactor uf : ufactormap.values()) {
-			uf.setBaseUnit(unitmap.get(uf.getBaseUnit()));
+			uf.setBaseUnit(unitsmap.get(uf.getBaseUnit()));
 		}
 
 	}
 	
+	
+	/**
+	 * Copy in {@link DataStructure}s from an input {@link SemSimModel}
+	 * @param modeltocopy The {@link SemSimModel} containing {@link DataStructure}s to copy
+	 */
 	private void copyDataStructures(SemSimModel modeltocopy) {
 		
-		HashMap<MappableVariable, MappableVariable> mvset = new HashMap<MappableVariable, MappableVariable>();
-
 		for(DataStructure ds : modeltocopy.getAssociatedDataStructures()) {
-			
-			if(ds instanceof SemSimInteger) dsmap.put(ds, new SemSimInteger((SemSimInteger)ds));
-			else if(ds instanceof MMLchoice) dsmap.put(ds, new MMLchoice((MMLchoice)ds));
-			else if(ds instanceof Decimal) {
-				
-				if (ds instanceof MappableVariable) {
-					MappableVariable newmv = new MappableVariable((MappableVariable)ds);
-					mvset.put((MappableVariable)ds, newmv);
-					dsmap.put(ds, newmv);
-				}
-				else {
-					dsmap.put(ds, new Decimal((Decimal)ds));
-				}
-			}
-		}
-		
-		for (MappableVariable old : mvset.keySet()) {
-			Set<MappableVariable> fromset = new HashSet<MappableVariable>();
-			for (MappableVariable mv : old.getMappedFrom()) {
-				fromset.add(mvset.get(mv));
-			}
-			Set<MappableVariable> toset = new HashSet<MappableVariable>();
-			for (MappableVariable mv : old.getMappedTo()) {
-				toset.add(mvset.get(mv));
-			}
-			MappableVariable newmv = mvset.get(old);
-			newmv.setMappedFrom(fromset);
-			newmv.setMappedTo(toset);
+			dsmap.put(ds, ds.copy());
 		}
 		
 		remapDataStructures();
 	}
 	
+	
+	/**
+	 * Establish links between the {@link DataStructure} copies and their associated physical 
+	 * model components as well as their units
+	 */
 	private void remapDataStructures() {
 		for (DataStructure ds : dsmap.values()) {
-			Computation comp = ds.getComputation();
-			if (comp!=null) {
-				if (compmap.containsKey(comp)) {
-					ds.setComputation(compmap.get(comp));
-				} 
-				else {
-					Computation newcomp = new Computation(comp);
-					ds.setComputation(newcomp);
-					compmap.put(comp, newcomp);
-				}
-			}
 			if (ds.hasAssociatedPhysicalComponent()) {
-				if (entities.containsKey(ds.getAssociatedPhysicalModelComponent())) {
-					ds.setAssociatedPhysicalModelComponent(entities.get(ds.getAssociatedPhysicalModelComponent()));
+				
+				PhysicalModelComponent pmc = ds.getAssociatedPhysicalModelComponent();
+				
+				if (pmc instanceof PhysicalEntity && entitiesmap.containsKey(pmc)) {
+					ds.setAssociatedPhysicalModelComponent(entitiesmap.get(pmc));
 				}
-				else {
-					ds.setAssociatedPhysicalModelComponent(procs.get(ds.getAssociatedPhysicalModelComponent()));
+				else if(pmc instanceof PhysicalProcess){
+					ds.setAssociatedPhysicalModelComponent(processesmap.get(pmc));
 				}
-			}
-			if (ds.hasSolutionDomain()) {
-				ds.setSolutionDomain(dsmap.get(ds.getSolutionDomain()));
+				else{ // Assume it's a physical force
+					ds.setAssociatedPhysicalModelComponent(forcesmap.get(pmc));
+				}
 			}
 			if (ds.hasUnits()) {
-				ds.setUnit(unitmap.get(ds.getUnit()));
+				ds.setUnit(unitsmap.get(ds.getUnit()));
 			}
-			HashSet<DataStructure> used = new HashSet<DataStructure>();
-			for (DataStructure utc : ds.getUsedToCompute()) {
-				used.add(dsmap.get(utc));
-			}
-			ds.setUsedToCompute(used);
 		}
 	}
 	
-	private void copyComputations() {
-		for (Computation comp : compmap.values()) {
-			HashSet<DataStructure> inputs = new HashSet<DataStructure>();
-			for (DataStructure in : comp.getInputs()) {
-				inputs.add(dsmap.get(in));
-			}
-			HashSet<DataStructure> outputs = new HashSet<DataStructure>();
-			for (DataStructure out : comp.getOutputs()) {
-				outputs.add(dsmap.get(out));
-			}
-			comp.setInputs(inputs);
-			comp.setOutputs(outputs);
-		}
-	}
 	
+	/**
+	 * Copy in info related to the model's {@link Submodel}s
+	 */
 	private void copySubModels() {
 		for (Submodel sm : modeltocopy.getSubmodels()) {
 			Submodel newsm;
+			
 			if (sm.isFunctional()) {
 				FunctionalSubmodel fsm = new FunctionalSubmodel((FunctionalSubmodel)sm);
-				if (!compmap.containsKey(fsm.getComputation())) {
-					Computation newcomp = new Computation(fsm.getComputation());
-					compmap.put(fsm.getComputation(), newcomp);
-					fsm.setComputation(newcomp);
-				}
-				else {
-					fsm.setComputation(compmap.get(fsm.getComputation()));
-				}
 				newsm = fsm;
 			}
-			else {
-				newsm = new Submodel(sm);
+			else newsm = new Submodel(sm);
+			
+			submodelsmap.put(sm, newsm);
+		}
+		for (Submodel sm : submodelsmap.values()) sm.replaceSubmodels(submodelsmap);
+		
+	}
+	
+	
+	/** Replaces data structures in the destination model with those copied 
+	 * from the source model */
+	private void remap() {		
+		this.destmodel.replaceDataStructures(dsmap);
+	}
+	
+	
+	/** Copy in info related to {@link Event}s */
+	private void copyEvents(){
+		
+		for(Event oldev : modeltocopy.getEvents()){
+			Event newev = new Event(oldev);
+			eventsmap.put(oldev, newev);
+			
+			if(oldev.getTimeUnit() != null)
+				newev.setTimeUnit(unitsmap.get(oldev.getTimeUnit()));
+			
+			// Reassign the new data structure output instances to the event assignments
+			for(EventAssignment newea : newev.getEventAssignments()){
+				DataStructure oldds = newea.getOutput();
+				newea.setOutput(dsmap.get(oldds));
 			}
-			smmap.put(sm, newsm);
+		}
+		
+		// Replace the old events with the new ones in all Computations
+		for(DataStructure newds : destmodel.getAssociatedDataStructures()){
+			
+			Computation newcomp = newds.getComputation();
+			Set<Event> neweventset = new HashSet<Event>();
+			
+			// The new Computation instances refer to the old Events here. Replace with new Events.
+			for(Event oldevent : newcomp.getEvents())
+				neweventset.add(eventsmap.get(oldevent));
+			
+			newcomp.setEvents(neweventset);
 		}
 	}
 	
-	private void remapSubmodels() {
-		
-		// For each submodel copy, associate it with data structure copies
-		for (Submodel newsm : smmap.values()) {
-			ArrayList<DataStructure> dsset = new ArrayList<DataStructure>();
-			
-			for (DataStructure ds : newsm.getAssociatedDataStructures()) {
-				dsset.add(dsmap.get(ds));
-			}
-			
-			// Associate it with the submodel copies
-			ArrayList<Submodel> smset = new ArrayList<Submodel>();
-			
-			for (Submodel assocsm : newsm.getSubmodels()) {
-				smset.add(smmap.get(assocsm));
-			}
-			newsm.setAssociatedDataStructures(dsset);
-			newsm.setSubmodels(smset);
-			
-			// If functional, establish its model subsumption map using the 
-			// submodel copies
-			if (newsm.isFunctional()) {
-				FunctionalSubmodel fsm = (FunctionalSubmodel)newsm;
-				Map<String, Set<FunctionalSubmodel>> oldrelsmmap = fsm.getRelationshipSubmodelMap();
-				Map<String, Set<FunctionalSubmodel>> relsmmap = new HashMap<String, Set<FunctionalSubmodel>>();
-				for (String rel : oldrelsmmap.keySet()) {
-					Set<FunctionalSubmodel> rsmset = new HashSet<FunctionalSubmodel>();
-					for (FunctionalSubmodel rfsm : oldrelsmmap.get(rel)) {
-						rsmset.add((FunctionalSubmodel) smmap.get(rfsm));
-					}
-					relsmmap.put(new String(rel), rsmset);
-				}
-				fsm.setRelationshipSubmodelMap(relsmmap);
-			}
+
+	/** Copy in info related to relational constraints */
+	private void copyRelationalConstraints() {
+		HashMap<RelationalConstraint, RelationalConstraint> relconmap = new HashMap<RelationalConstraint, RelationalConstraint>();
+		for (RelationalConstraint recon : modeltocopy.getRelationalConstraints()) {
+			RelationalConstraint newrecon = new RelationalConstraint(recon);
+			newrecon.replaceAllDataStructures(dsmap);
+			relconmap.put(recon, newrecon);
 		}
+		destmodel.setRelationalConstraints(relconmap.values());
 	}
+
 }

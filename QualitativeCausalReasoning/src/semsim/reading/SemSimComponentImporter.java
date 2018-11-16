@@ -1,28 +1,45 @@
 package semsim.reading;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.jdom.JDOMException;
 import org.semanticweb.owlapi.model.OWLException;
 
 import semsim.SemSimLibrary;
+import semsim.fileaccessors.FileAccessorFactory;
+import semsim.fileaccessors.ModelAccessor;
 import semsim.model.collection.FunctionalSubmodel;
 import semsim.model.collection.SemSimModel;
 import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
+import semsim.reading.ModelClassifier.ModelType;
 
-public class SemSimComponentImporter {
 /**
  * This class provides methods for importing submodels 
  * and units from other models. Motivated by need to support
  * CellML 1.1 models.
- * @throws CloneNotSupportedException 
  */
+public class SemSimComponentImporter {
 
-	public static FunctionalSubmodel importFunctionalSubmodel(File receivingmodelfile, SemSimModel receivingmodel,
-			String localcompname, String origcompname, String hrefValue, SemSimLibrary sslib){
+
+	/**
+	 * Import a FunctionalSubmodel (AKA a CellML component element) into a SemSimModel
+	 * @param supplyingmodelfile Location of the model containing the FunctionalSubmodel to import
+	 * @param receivingmodel The SemSimModel to which the FunctionalSubmodel will be added
+	 * @param localcompname The name of the imported FunctionalSubmodel to use in the SemSimModel
+	 * @param origcompname The original name of the imported FunctionalSubmodel used in the supplying model
+	 * @param hrefValue Attribute equal to the Uniform Resource Identifier that identifies the location of the supplying model.
+	 * @param sslib A SemSimLibrary instance
+	 * @return The FunctionalSubmodel imported into the receiving SemSimModel
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	protected static FunctionalSubmodel importFunctionalSubmodel(ModelAccessor supplyingmodelfile, SemSimModel receivingmodel,
+			String localcompname, String origcompname, String hrefValue, SemSimLibrary sslib) throws JDOMException, IOException{
 		
-		String supplyingmodelfilepath = getPathToSupplyingModel(receivingmodelfile, receivingmodel, hrefValue);
+		String supplyingmodelfilepath = getPathToSupplyingModel(supplyingmodelfile, receivingmodel, hrefValue);
 		if(supplyingmodelfilepath==null){
 			return null;
 		}
@@ -34,18 +51,20 @@ public class SemSimComponentImporter {
 			System.err.println(error);
 			return null;
 		}
+		ModelAccessor importedmodelaccessor = FileAccessorFactory.getModelAccessor(importedmodelfile);
 		SemSimModel importedmodel = null;
-		int modeltype = ModelClassifier.classify(importedmodelfile);
-		if(modeltype == ModelClassifier.SEMSIM_MODEL){
+		ModelType modeltype = supplyingmodelfile.getModelType();
+		if(modeltype == ModelType.SEMSIM_MODEL){
 			try {
-				importedmodel = new SemSimOWLreader(importedmodelfile).read();
+				importedmodel = new SemSimOWLreader(importedmodelaccessor).read();
 			} catch (OWLException e) {
 				e.printStackTrace();
 			}
 		}
-		else if(modeltype == ModelClassifier.CELLML_MODEL){
+		else if(modeltype == ModelType.CELLML_MODEL){
 			try {
-				importedmodel = new CellMLreader(importedmodelfile).read();
+				if (!ModelClassifier.isValidCellMLmodel(importedmodelfile)) return null;
+				importedmodel = new CellMLreader(importedmodelaccessor).read();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -63,6 +82,15 @@ public class SemSimComponentImporter {
 	}
 	
 	
+	/**
+	 * Import units from a CellML or SemSimModel into another SemSimModel
+	 * @param model The SemSimModel to import into
+	 * @param localunitname The local name of the unit in the receiving SemSimModel
+	 * @param originalname The original name of the unit in the model from which it is imported
+	 * @param hrefValue Attribute equal to the Uniform Resource Identifier that identifies the location of 
+	 * model supplying the imported unit
+	 * @return The UnitOfMeasurement imported into the specified SemSimModel
+	 */
 	protected static UnitOfMeasurement importUnits(SemSimModel model, String localunitname, String originalname, String hrefValue){
 		
 		UnitOfMeasurement newunit = null;
@@ -85,10 +113,22 @@ public class SemSimComponentImporter {
 	}
 	
 	
-	private static FunctionalSubmodel addImportedComponentToModel(SemSimModel model, String localsemsimname, String localsourcemodelname, String hrefValue, FunctionalSubmodel origsubmodel, FunctionalSubmodel parent) throws CloneNotSupportedException{
+	/**
+	 * Used internally to clone a FunctionalSubmodel from one model and add the clone to another model
+	 * @param model The model that the clone will be added to
+	 * @param name Unique name for the FunctionalSubmodel within the SemSimModel
+	 * @param localname Unique name for the FunctionalSubmodel within a parent group of FunctionalSubmodels
+	 * @param hrefValue Attribute equal to the Uniform Resource Identifier that identifies the location of 
+	 * model supplying the imported FunctionalSubmodel
+	 * @param origsubmodel The FunctionalSubmodel to clone
+	 * @param parent If present, the parent imported FunctionalSubmodel that necessitated importing the origsubmodel
+	 * @return The FunctionalSubmodel clone
+	 * @throws CloneNotSupportedException
+	 */
+	private static FunctionalSubmodel addImportedComponentToModel(SemSimModel model, String name, String localname, String hrefValue, FunctionalSubmodel origsubmodel, FunctionalSubmodel parent) throws CloneNotSupportedException{
 		FunctionalSubmodel importedcompclone = new FunctionalSubmodel(origsubmodel);
-		importedcompclone.setName(localsemsimname);
-		importedcompclone.setLocalName(localsourcemodelname);
+		importedcompclone.setName(name);
+		importedcompclone.setLocalName(localname);
 		importedcompclone.setImported(true);
 		importedcompclone.setReferencedName(origsubmodel.getName());
 		importedcompclone.setHrefValue(hrefValue);
@@ -99,7 +139,7 @@ public class SemSimComponentImporter {
 
 		for(DataStructure ds : importedcompclone.getAssociatedDataStructures()){
 			// Rename the data structure using a part of the local name of the imported component
-			String localdsname = localsemsimname + "." + ds.getName().substring(ds.getName().lastIndexOf(".")+1);
+			String localdsname = name + "." + ds.getName().substring(ds.getName().lastIndexOf(".")+1);
 			ds.setName(localdsname);
 
 			// When parsing SemSim OWL files, all Data Structures are added to model first. They may be imported, so reuse if already present.
@@ -130,6 +170,14 @@ public class SemSimComponentImporter {
 	}
 	
 	
+	/**
+	 * Used to iteratively add any FunctionalSubmodels that are part of a group encapsulated by
+	 * a parent FunctionalSubmodel
+	 * @param model The SemSimModel to add the FunctionalSubmodels to
+	 * @param localcompname Local name used for the parent FunctionalSubmodel
+	 * @param sourcecomp The parent FunctionalSubmodel
+	 * @throws CloneNotSupportedException
+	 */
 	private static void getGroupedComponentsFromImport(SemSimModel model, String localcompname, FunctionalSubmodel sourcecomp) throws CloneNotSupportedException{
 		for(String rel : sourcecomp.getRelationshipSubmodelMap().keySet()){
 			for(FunctionalSubmodel fsub : sourcecomp.getRelationshipSubmodelMap().get(rel)){
@@ -144,9 +192,17 @@ public class SemSimComponentImporter {
 		}
 	}
 	
-	private static String getPathToSupplyingModel(File receivingmodelfile, SemSimModel receivingmodel, String hrefValue){
+	/**
+	 * Get the file path to a model from which an object is imported
+	 * @param modelfile Location of the model referencing an imported object
+	 * @param receivingmodel The SemSimModel that will receive the import, if the import can be found
+	 * @param hrefValue Attribute equal to the Uniform Resource Identifier that identifies the location of 
+	 * model supplying the imported object
+	 * @return The file path to the model supplying an imported object
+	 */
+	private static String getPathToSupplyingModel(ModelAccessor modelfile, SemSimModel receivingmodel, String hrefValue){
 		String supplyingmodelfilepath = null;
-		if(hrefValue.startsWith("http://")){
+		if(hrefValue.startsWith("http")){
 			String error = "ERROR: Cannot import components from...\n\n\t" + hrefValue + "\n\n...because it is not a local file.";
 			System.err.println(error);
 			receivingmodel.addError(error);
@@ -155,7 +211,7 @@ public class SemSimComponentImporter {
 		else if(hrefValue.startsWith("/") || hrefValue.startsWith("\\"))
 			hrefValue = hrefValue.substring(1);
 		
-		supplyingmodelfilepath = receivingmodelfile.getParent() + "/" + hrefValue;
+		supplyingmodelfilepath = modelfile.getFile().getParent() + "/" + hrefValue;
 		return supplyingmodelfilepath;
 	}
 }

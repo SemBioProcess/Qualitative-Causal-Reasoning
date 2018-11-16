@@ -1,9 +1,8 @@
 package semsim.writing;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -27,7 +26,13 @@ import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.computational.datastructures.MappableVariable;
 import semsim.utilities.SemSimUtil;
 
-
+/**
+ * Class for writing out MATLAB code from SemSim models.
+ * Consider this class under construction; it has not
+ * been thoroughly tested.
+ * @author mneal
+ *
+ */
 public class MATLABwriter extends ModelWriter{
 	
 	public String timevectorname;
@@ -42,7 +47,14 @@ public class MATLABwriter extends ModelWriter{
 		super(model);
 	}
 	
-	public String writeToString() {
+	@Override
+	public String encodeModel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public boolean writeToStream(OutputStream stream) {
 				
 		outputter.setFormat(Format.getPrettyFormat());
 
@@ -131,8 +143,8 @@ public class MATLABwriter extends ModelWriter{
 				
 				// Otherwise, if the data structure's value comes from a component-to-component mapping ala CellML models,
 				// make the RHS just the name of the source data structure
-				else if(mv.getMappedFrom().size()>0)
-					formula = mv.getMappedFrom().toArray(new MappableVariable[]{})[0].getName();
+				else if(mv.getMappedFrom()!=null)
+					formula = mv.getMappedFrom().getName();
 			}
 			
 			// If we've got a formula, store it in lookup table, otherwise we assume 
@@ -167,8 +179,8 @@ public class MATLABwriter extends ModelWriter{
 		
 		String modelname = semsimmodel.getName();
 		modelname = modelname.replace(".", "_");
-		timevectorname = createUniqueNameForMatlabVariable("t", dsnames);
-		statevarvectorname = createUniqueNameForMatlabVariable("y", dsnames);
+		timevectorname = createUniqueNameForMATLABvariable("t", dsnames);
+		statevarvectorname = createUniqueNameForMATLABvariable("y", dsnames);
 		
 		// write out header and rest of file
 		String outstring = "";
@@ -286,9 +298,8 @@ public class MATLABwriter extends ModelWriter{
 		}
 		outstring = outstring + "\n";
 		
-		outstring = writeNeededFunctions(outstring);
-		
-		return outstring;
+		this.commitStringtoStream(stream, writeNeededFunctions(outstring));
+		return true;
 	}
 	
 	
@@ -302,7 +313,7 @@ public class MATLABwriter extends ModelWriter{
 	}
 
 	
-	public ArrayList<DataStructure> swap(DataStructure arg0, DataStructure arg1, ArrayList<DataStructure> list){
+	private ArrayList<DataStructure> swap(DataStructure arg0, DataStructure arg1, ArrayList<DataStructure> list){
 		int newindexforcdwd = list.indexOf(arg1);
 		for(int j=list.indexOf(arg0); j<list.indexOf(arg1); j++){
 			list.set(j, list.get(j+1));
@@ -312,7 +323,7 @@ public class MATLABwriter extends ModelWriter{
 	}
 	
 	
-	public String createUniqueNameForMatlabVariable(String startname, Set<String> usednames){
+	private String createUniqueNameForMATLABvariable(String startname, Set<String> usednames){
 		String newname = startname;
 		int g = 0;
 		while(usednames.contains(newname)){
@@ -321,8 +332,6 @@ public class MATLABwriter extends ModelWriter{
 		}
 		return newname;
 	}
-	
-	
 	
 	
 	// Create MATLAB-friendly conditional statement to replace piecewise formulations
@@ -338,7 +347,7 @@ public class MATLABwriter extends ModelWriter{
 		try {
 			doc = saxbuilder.build(new StringReader(mathmlstring));
 			
-			Namespace mathns = Namespace.getNamespace(RDFNamespace.MATHML.getNamespaceasString());
+			Namespace mathns = Namespace.getNamespace(RDFNamespace.MATHML.getNamespaceAsString());
 			if(doc.getRootElement().getChild("piecewise", mathns)!=null){
 				Iterator<?> piecesit = doc.getRootElement().getChild("piecewise",mathns).getChildren("piece", mathns).iterator();
 				
@@ -378,7 +387,7 @@ public class MATLABwriter extends ModelWriter{
 	
 	// Write out standalone functions that are needed for matlab to understand formulas 
 	// that are output from libsbml formula writer
-	public String writeNeededFunctions(String outstring){
+	private String writeNeededFunctions(String outstring){
 		
 		// Exponent function
 		String thestring = outstring + "\n";
@@ -392,15 +401,11 @@ public class MATLABwriter extends ModelWriter{
 		
 		return thestring;
 	}
-	
 
 	@Override
-	public void writeToFile(File destination) {
-		SemSimUtil.writeStringToFile(writeToString(), destination);
+	public AbstractRDFwriter getRDFwriter() {
+		return null;
 	}
 
-	@Override
-	public void writeToFile(URI destination) {
-		SemSimUtil.writeStringToFile(writeToString(), new File(destination));
-	}
+
 }

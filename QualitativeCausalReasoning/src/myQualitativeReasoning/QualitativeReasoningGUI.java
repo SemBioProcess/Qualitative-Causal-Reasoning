@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -18,11 +19,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.jdom.JDOMException;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import myQualitativeReasoning.QualitativeReasoningWorkbench.BatonVal;
+import semsim.fileaccessors.FileAccessorFactory;
+import semsim.fileaccessors.ModelAccessor;
 import semsim.model.collection.SemSimModel;
 import semsim.reading.SemSimOWLreader;
 
@@ -169,7 +173,8 @@ public class QualitativeReasoningGUI implements ActionListener {
 				try {
 					System.out.println("Loading model into SemSimAPI");
 					
-					model = new SemSimOWLreader(file).read();
+					ModelAccessor ma = FileAccessorFactory.getModelAccessor(file);
+					model = new SemSimOWLreader(ma).read();
 					
 					loadLabel.setText("Model loaded: " + file.getName());
 					
@@ -195,6 +200,10 @@ public class QualitativeReasoningGUI implements ActionListener {
 						propertybox.addItem(ind.asOWLNamedIndividual().getIRI().getFragment());
 					}
 				} catch (OWLException e1) {
+					e1.printStackTrace();
+				} catch (JDOMException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}

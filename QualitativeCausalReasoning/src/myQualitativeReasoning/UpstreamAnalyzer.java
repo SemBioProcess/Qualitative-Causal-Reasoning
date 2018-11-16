@@ -32,8 +32,8 @@ public class UpstreamAnalyzer extends Analyzer{
 		//  recurse on the dependency that solves for the role player
 		
 		String currentpropdepuri = currentpropuri.replace("property", "dependency");
-		Set<String> posplayers = SemSimOWLFactory.getIndObjectProperty(getInferredAxiomsOntology(), currentpropdepuri, hasPosPropertyPlayerIRI.toString());
-		Set<String> negplayers = SemSimOWLFactory.getIndObjectProperty(getInferredAxiomsOntology(), currentpropdepuri, hasNegPropertyPlayerIRI.toString());
+		Set<String> posplayers = SemSimOWLFactory.getIndObjectPropertyObjects(getInferredAxiomsOntology(), currentpropdepuri, hasPosPropertyPlayerIRI.toString());
+		Set<String> negplayers = SemSimOWLFactory.getIndObjectPropertyObjects(getInferredAxiomsOntology(), currentpropdepuri, hasNegPropertyPlayerIRI.toString());
 		
 		ArrayList<String> allplayers = new ArrayList<String>();
 		allplayers.addAll(posplayers);

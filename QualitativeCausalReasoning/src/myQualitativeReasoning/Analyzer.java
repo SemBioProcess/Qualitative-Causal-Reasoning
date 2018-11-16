@@ -197,14 +197,14 @@ public abstract class Analyzer {
 		// then get the process associated with currentpropuri.
 		// and then get the entity that the dep solves for
 		// record the multiplier on the source, record the multiplier on the sink
-		String currentphyspropof = SemSimOWLFactory.getFunctionalIndObjectProperty(
+		String currentphyspropof = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(
 				getInferredAxiomsOntology(), currentpropuri, SemSimRelation.PHYSICAL_PROPERTY_OF.getIRI().toString());
 		OWLIndividual currentphyspropofind = factory.getOWLNamedIndividual(IRI.create(currentphyspropof));
 
 		OWLIndividual depind = factory.getOWLNamedIndividual(IRI.create(dependencyuri));
-		String solvedpropuri = SemSimOWLFactory.getFunctionalIndObjectProperty(
+		String solvedpropuri = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(
 				getInferredAxiomsOntology(), dependencyuri, hasSolvedPropertyPlayerIRI.toString());
-		String solvedphyspropof = SemSimOWLFactory.getFunctionalIndObjectProperty(
+		String solvedphyspropof = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(
 				getInferredAxiomsOntology(), solvedpropuri, SemSimRelation.PHYSICAL_PROPERTY_OF.getIRI().toString());
 
 		OWLIndividual solvedphyspropofind = factory.getOWLNamedIndividual(IRI.create(solvedphyspropof));

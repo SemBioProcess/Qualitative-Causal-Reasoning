@@ -8,9 +8,16 @@ import semsim.annotation.ReferenceTerm;
 import semsim.definitions.ReferenceOntologies;
 import semsim.definitions.SemSimTypes;
 import semsim.definitions.SemSimRelations.SemSimRelation;
+import semsim.model.collection.SemSimModel;
 import semsim.model.physical.PhysicalEntity;
 import semsim.owl.SemSimOWLFactory;
 
+/**
+ * Class for representing physical entities that are defined using 
+ * controlled knowledge resource terms.
+ * @author mneal
+ *
+ */
 public class ReferencePhysicalEntity extends PhysicalEntity implements ReferenceTerm{
 	
 	public ReferencePhysicalEntity(URI uri, String description){
@@ -19,6 +26,7 @@ public class ReferencePhysicalEntity extends PhysicalEntity implements Reference
 		setName(description);
 	}
 	
+	@Override
 	public ReferenceOntologyAnnotation getPhysicalDefinitionReferenceOntologyAnnotation(SemSimLibrary lib){
 		if(hasPhysicalDefinitionAnnotation()){
 			return new ReferenceOntologyAnnotation(SemSimRelation.HAS_PHYSICAL_DEFINITION, referenceuri, getDescription(), lib);
@@ -26,13 +34,12 @@ public class ReferencePhysicalEntity extends PhysicalEntity implements Reference
 		return null;
 	}
 	
+	@Override
 	public URI getPhysicalDefinitionURI() {
 		return URI.create(referenceuri.toString());
 	}
 	
-	/**
-	 * @return The name of the knowledge base that contains the URI used as the annotation value
-	 */
+	@Override
 	public String getNamewithOntologyAbreviation(SemSimLibrary semsimlib) {
 		return getName() + " (" + semsimlib.getReferenceOntologyAbbreviation(referenceuri) + ")";
 	}
@@ -41,7 +48,7 @@ public class ReferencePhysicalEntity extends PhysicalEntity implements Reference
 	protected boolean isEquivalent(Object obj) {
 		URI physdefuri = ((ReferencePhysicalEntity)obj).getPhysicalDefinitionURI();
 		
-		String physdefID = getTermID().replace(":", "_");
+		String physdefID = getTermFragment().replace(":", "_");
 		String thisID = SemSimOWLFactory.getIRIfragment(physdefuri.toString()).replace(":", "_");
 		
 		return (ReferenceOntologies.URIsAreFromSameReferenceOntology(physdefuri, referenceuri) 
@@ -54,7 +61,16 @@ public class ReferencePhysicalEntity extends PhysicalEntity implements Reference
 	}
 
 	@Override
-	public String getTermID() {
+	public String getTermFragment() {
 		return SemSimOWLFactory.getIRIfragment(referenceuri.toString());
+	}
+	@Override
+	public ReferencePhysicalEntity addToModel(SemSimModel model) {
+		return model.addReferencePhysicalEntity(this);
+	}
+	
+	@Override
+	public void removeFromModel(SemSimModel model) {
+		model.removePhysicalEntityFromCache(this);
 	}
 }

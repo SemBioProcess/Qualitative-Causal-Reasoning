@@ -36,8 +36,8 @@ public class DownstreamAnalyzer extends Analyzer{
 		System.out.println("Analyzing " + SemSimOWLFactory.getIRIfragment(currentpropuri));
 		System.out.println("Previous property was " + SemSimOWLFactory.getIRIfragment(previouspropuri));
 		
-		Set<String> posdeps = SemSimOWLFactory.getIndObjectProperty(getInferredAxiomsOntology(), currentpropuri, posPropertyPlayerInIRI.toString());
-		Set<String> negdeps = SemSimOWLFactory.getIndObjectProperty(getInferredAxiomsOntology(), currentpropuri, negPropertyPlayerInIRI.toString());
+		Set<String> posdeps = SemSimOWLFactory.getIndObjectPropertyObjects(getInferredAxiomsOntology(), currentpropuri, posPropertyPlayerInIRI.toString());
+		Set<String> negdeps = SemSimOWLFactory.getIndObjectPropertyObjects(getInferredAxiomsOntology(), currentpropuri, negPropertyPlayerInIRI.toString());
 		
 		ArrayList<String> alldeps = new ArrayList<String>();
 		alldeps.addAll(posdeps);
@@ -46,7 +46,7 @@ public class DownstreamAnalyzer extends Analyzer{
 		
 		for(String dep : alldeps){
 						
-			String solvedpropuri = SemSimOWLFactory.getFunctionalIndObjectProperty(getInferredAxiomsOntology(), dep, hasSolvedPropertyPlayerIRI.toString());
+			String solvedpropuri = SemSimOWLFactory.getFunctionalIndObjectPropertyObject(getInferredAxiomsOntology(), dep, hasSolvedPropertyPlayerIRI.toString());
 
 			if(currentpath.contains(solvedpropuri) && ! solvedpropuri.equals(previouspropuri)){
 				

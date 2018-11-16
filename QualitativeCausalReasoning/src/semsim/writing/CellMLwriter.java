@@ -1,7 +1,5 @@
 package semsim.writing;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,17 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
 import semsim.annotation.Annotation;
-import semsim.annotation.CurationalMetadata.Metadata;
 import semsim.definitions.RDFNamespace;
 import semsim.definitions.SemSimRelations.SemSimRelation;
+import semsim.fileaccessors.OMEXAccessor;
 import semsim.model.Importable;
 import semsim.model.collection.FunctionalSubmodel;
 import semsim.model.collection.SemSimModel;
@@ -30,40 +28,43 @@ import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.computational.datastructures.MappableVariable;
 import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
-import semsim.reading.SemSimRDFreader;
+import semsim.reading.ModelClassifier.ModelType;
+import semsim.utilities.ErrorLog;
 import semsim.utilities.SemSimUtil;
 
+/**
+ * Class for writing out CellML model files from {@link SemSimModel} objects
+ * @author mneal
+ *
+ */
 public class CellMLwriter extends ModelWriter {
 	private Namespace mainNS;
-	private SemSimRDFwriter rdfblock;
-	private Set<DataStructure> looseDataStructures = new HashSet<DataStructure>();
+	private AbstractRDFwriter rdfwriter;
 	private Element root;
+	private static String timedomainname = "time";
+	private Map<String,String> oldAndNewUnitNameMap = new HashMap<String,String>();
+	private XMLOutputter outputter = new XMLOutputter();
+
 	
 	public CellMLwriter(SemSimModel model) {
 		super(model);
 	}
 	
-	//*************WRITE PROCEDURE********************************************//
 	
-	public String writeToString(){
+	@Override
+	public String encodeModel() {
 		Document doc = null;
-		XMLOutputter outputter = new XMLOutputter();
 		outputter.setFormat(Format.getPrettyFormat());
 		
-		try{	
-			mainNS = Namespace.getNamespace(RDFNamespace.CELLML1_1.getNamespaceasString());
+			mainNS = Namespace.getNamespace(RDFNamespace.CELLML1_1.getNamespaceAsString());
 			
-			// Check for events, if present write out error msg
-			if(semsimmodel.getEvents().size()>0){
-				Element eventerror = new Element("error");
-				eventerror.setAttribute("msg", "SemSim-to-CellML translation not supported for models with discrete events.");
-				return outputter.outputString(new Document(eventerror));
-			}
-						
 			createRDFBlock();
 			createRootElement();
+			SemSimUtil.createUnitNameMap(semsimmodel,oldAndNewUnitNameMap);
 			
 			doc = new Document(root);
+			
+			rdfwriter.setRDFforModelLevelAnnotations();
 			
 			declareImports();
 			
@@ -75,36 +76,55 @@ public class CellMLwriter extends ModelWriter {
 			}
 			
 			declareUnits();
+			declareSemSimSubmodels(); // this needs to go before we add variables to output b/c we may need to assign new metadata ID's to variables and components
 			declareComponentsandVariables();
 			declareGroupings();
 			declareConnections();
 			
-			// Declare the RDF metadata
-			if(!rdfblock.rdf.isEmpty()){
-				String rawrdf = SemSimRDFreader.getRDFmodelAsString(rdfblock.rdf);
+			// Add the RDF metadata, if we are writing to a standalone CellML file
+			if( ! rdfwriter.rdf.isEmpty() && ! (getWriteLocation() instanceof OMEXAccessor)){
+				String rawrdf = AbstractRDFwriter.getRDFmodelAsString(rdfwriter.rdf, "RDF/XML-ABBREV");
 				Content newrdf = makeXMLContentFromString(rawrdf);
 				if(newrdf!=null) root.addContent(newrdf);
 			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		return outputter.outputString(doc);
-	}
 
-	private void createRDFBlock() {
-		String rdfstring = null;
-		for(Annotation ann : semsimmodel.getAnnotations()){
-			if(ann.getRelation()==SemSimRelation.CELLML_RDF_MARKUP){
-				rdfstring = (String) ann.getValue();
-				break;
-			}
-		}
-		
-		rdfblock = new SemSimRDFwriter(semsimmodel, rdfstring, mainNS.getURI().toString());
+        return outputter.outputString(doc);
 	}
 	
+	//*************WRITE PROCEDURE********************************************//
+
+	
+	/**
+	 * Assign either a CASAwriter or SemSimRDFwriter for serializing the 
+	 * RDF content associated with the CellML model. The CASAwriter is used
+	 * if the CellML model is being written out as part of an OMEX archive,
+	 * and a SemSimRDFwriter is used if the model is being written out in a
+	 * standalone CellML file.
+	 */
+	private void createRDFBlock() {
+		
+		// If we're writing to an OMEX file, make the RDF writer a CASAwriter that follows COMBINE conventions
+		if(getWriteLocation() instanceof OMEXAccessor){
+			rdfwriter = new CASAwriter(semsimmodel);
+			rdfwriter.setXMLbase("./" + getWriteLocation().getFileName() + "#");
+		}
+		// Otherwise use a SemSimRDFwriter
+		else{
+			String rdfstring = null;
+			for(Annotation ann : semsimmodel.getAnnotations()){
+				if(ann.getRelation()==SemSimRelation.CELLML_RDF_MARKUP){
+					rdfstring = (String) ann.getValue();
+					break;
+				}
+			}
+			
+			rdfwriter = new SemSimRDFwriter(semsimmodel, rdfstring, ModelType.CELLML_MODEL);
+		}
+	}
+	
+	
+	/** Add the root "model" element to the CellML JDOM object, declare namespaces
+	 * and set attributes such as model name and ID */
 	private void createRootElement() {		
 		root = new Element("model",mainNS);
 		root.addNamespaceDeclaration(RDFNamespace.CMETA.createJdomNamespace());
@@ -115,20 +135,18 @@ public class CellMLwriter extends ModelWriter {
 		root.addNamespaceDeclaration(RDFNamespace.DCTERMS.createJdomNamespace());
 		root.addNamespaceDeclaration(RDFNamespace.VCARD.createJdomNamespace());
 		
-		String namestring = semsimmodel.getName();
-		if(semsimmodel.getCurationalMetadata().hasAnnotationValue(Metadata.fullname))
-			namestring = semsimmodel.getCurationalMetadata().getAnnotationValue(Metadata.fullname);
+		String namestring = semsimmodel.hasName() ? semsimmodel.getName() : "model0";
 		
 		root.setAttribute("name", namestring);
 		
-		if(semsimmodel.getCurationalMetadata().hasAnnotationValue(Metadata.sourcemodelid)) {
-			namestring = semsimmodel.getCurationalMetadata().getAnnotationValue(Metadata.sourcemodelid);
-			root.setAttribute("id", namestring, RDFNamespace.CMETA.createJdomNamespace());
-		}
+		String metaid = semsimmodel.hasMetadataID() ? semsimmodel.getMetadataID() : 
+			semsimmodel.assignValidMetadataIDtoSemSimObject("metaid0", semsimmodel);
 		
-		
+		root.setAttribute("id", metaid, RDFNamespace.CMETA.createJdomNamespace());
 	}
 	
+	
+	/** Declare all imported content in the CellML model */
 	private void declareImports() {
 		// Declare the imports
 		Set<Element> importelements = new HashSet<Element>();
@@ -164,10 +182,10 @@ public class CellMLwriter extends ModelWriter {
 				importedpiece.setAttribute(importedpiecerefattr, ssc.getReferencedName());
 				
 				// Add the RDF block for any singular reference ontology annotations and free-text descriptions
-				if(ssc instanceof DataStructure) rdfblock.setRDFforDataStructureAnnotations((DataStructure)ssc);
+				if(ssc instanceof DataStructure) rdfwriter.setRDFforDataStructureAnnotations((DataStructure)ssc);
 				
 				//TODO: might need to rethink the data that gets written out for submodels
-				else if(ssc instanceof Submodel) rdfblock.setRDFforSubmodelAnnotations((Submodel)ssc);
+				else if(ssc instanceof Submodel) rdfwriter.setRDFforSubmodelAnnotations((Submodel)ssc);
 			}
 			if(importel!=null && importedpiece!=null){
 				importel.addContent(importedpiece);
@@ -177,13 +195,20 @@ public class CellMLwriter extends ModelWriter {
 		root.addContent(importelements);
 	}
 	
+	
+	/** Declare all units in the model */
 	private void declareUnits() {
 		for(UnitOfMeasurement uom : semsimmodel.getUnits()){
 			
 			if(!sslib.isCellMLBaseUnit(uom.getName()) && !uom.isImported()){
 				
 				Element unitel = new Element("units", mainNS);
-				unitel.setAttribute("name", uom.getName().replace(" ", "_"));
+				
+				// Convert name into CellML-friendly version
+				
+				String unitname = oldAndNewUnitNameMap.get(uom.getName());
+				
+				unitel.setAttribute("name", unitname);
 				
 				if(uom.isFundamental()) unitel.setAttribute("base_units", "yes");
 				
@@ -201,7 +226,8 @@ public class CellMLwriter extends ModelWriter {
 						if(factor.getMultiplier()!=1.0 && factor.getMultiplier()!=0.0)
 							factorel.setAttribute("multiplier", Double.toString(factor.getMultiplier()));
 						
-						factorel.setAttribute("units", factor.getBaseUnit().getName().replace(" ", "_"));
+						String baseunitname = oldAndNewUnitNameMap.get(factor.getBaseUnit().getName());
+						factorel.setAttribute("units", baseunitname);
 						unitel.addContent(factorel);
 					}
 				}
@@ -210,27 +236,83 @@ public class CellMLwriter extends ModelWriter {
 		}
 	}
 	
+	
+	/** Declare all components and their variables in the model */
 	private void declareComponentsandVariables() {
-		looseDataStructures.addAll(semsimmodel.getAssociatedDataStructures());
 
 		// If there are no functional submodels, then create a new one that houses all the data structures
 		if(semsimmodel.getFunctionalSubmodels().size()==0){
+			
 			Set<DataStructure> outputset = new HashSet<DataStructure>();
 			outputset.addAll(semsimmodel.getAssociatedDataStructures());
-			FunctionalSubmodel maincomponent = new FunctionalSubmodel("component_0", outputset);
-			maincomponent.setAssociatedDataStructures(semsimmodel.getAssociatedDataStructures());
-			String mathml = "";
 			
+			String modelname = semsimmodel.getName();
+			modelname.replaceAll(".", "_");
+			
+			FunctionalSubmodel maincomponent = new FunctionalSubmodel(modelname, outputset);
+			
+			maincomponent.setAssociatedDataStructures(semsimmodel.getDeclaredDataStructures()); // leave out undeclared data structures that can show up in JSim models
+			
+			
+			// Make sure that no variables have "." in their names (need a full flattening of the model)
 			for(DataStructure ds : maincomponent.getAssociatedDataStructures()){
-				if(ds.getComputation().getEvents().size()>0){
-					System.err.println("Error: Cannot convert models with discrete events into CellML");
-					break;
+
+				if(ds.getName().contains(".")){
+					
+					String oldname = ds.getName();
+					String newname = oldname.replace(".", "_");
+					
+					// if model already contains a data structure with the new name, use prefix name without "."
+					Integer x = 0;
+					while(semsimmodel.containsDataStructure(newname)){
+						newname = newname + x.toString();
+						x++;
+					}
+					ds.setName(newname);
+					SemSimUtil.replaceCodewordInAllEquations(ds, ds, semsimmodel, oldname, newname, Pair.of(1.0, "*"));					
 				}
-				else mathml = mathml + ds.getComputation().getMathML() + "\n";
+			}
+			
+			// Collect all the mathml for the single component
+			String mathml = "";
+
+			for(DataStructure ds : maincomponent.getAssociatedDataStructures()){
+				
+				if(ds.getComputation().hasMathML()){
+					
+					// Make sure the MathML contains a left-hand side
+					String dsmathml = ds.getComputation().getMathML();
+				
+					if( ! SemSimUtil.mathmlHasLHS(dsmathml))
+						dsmathml = SemSimUtil.addLHStoMathML(dsmathml, ds.getName(), ds.hasStartValue(), timedomainname);
+					
+					// Make sure that any in-equation unit declarations are CellML-compliant
+					int index = dsmathml.indexOf("units=\"");
+					while(index >= 0) {
+						// Get the unit name in the first two quotes
+					   String submathml = dsmathml.substring(index+7, dsmathml.length()-1);
+					   int quoteindex = submathml.indexOf("\"");
+					   String oldunitname = submathml.substring(0, quoteindex);
+					   
+					   if(oldAndNewUnitNameMap.containsKey(oldunitname)){
+						   String newunitname = oldAndNewUnitNameMap.get(oldunitname);
+						   dsmathml = dsmathml.replace("units=\"" + oldunitname + "\"", "units=\"" + newunitname + "\"");
+					   }
+					   
+					   index = submathml.indexOf(dsmathml, index+1);
+					}
+					
+					// OpenCOR doesn't like "integer" type declarations in MathML so get rid of them
+					dsmathml = dsmathml.replace("<cn type=\"integer\">","<cn>");
+					
+					mathml = mathml + dsmathml + "\n";
+				}
 			}
 			maincomponent.getComputation().setMathML(mathml);
 			processFunctionalSubmodel(maincomponent, false);
 		}
+		
+		// Otherwise process each CellML-style submodel
 		else{
 			for(Submodel submodel : semsimmodel.getSubmodels()){
 				if(submodel.isFunctional()){
@@ -238,13 +320,10 @@ public class CellMLwriter extends ModelWriter {
 				}
 			}
 		}
-		
-		if( ! looseDataStructures.isEmpty()){
-			System.err.println("There were data structures left over");
-			for(DataStructure ds : looseDataStructures) System.err.println(ds.getName());
-		}
 	}
 	
+	
+	/** Declare groupings between components in the model */
 	private void declareGroupings() {
 		Set<CellMLGrouping> groupings = new HashSet<CellMLGrouping>();
 		for(Submodel parentsub : semsimmodel.getSubmodels()){
@@ -298,6 +377,8 @@ public class CellMLwriter extends ModelWriter {
 		}
 	}
 	
+	
+	/** Declare all variable mappings in the model */
 	private void declareConnections() {
 		Set<CellMLConnection> connections = new HashSet<CellMLConnection>();
 		for(DataStructure ds : semsimmodel.getAssociatedDataStructures()){
@@ -320,9 +401,8 @@ public class CellMLwriter extends ModelWriter {
 							con.varmap.put(var1, mappedvar);
 						}
 					}
-					else{
-						System.err.println("Couldn't retrieve submodels from variable mapping " + var1.getName() + " > " + mappedvar.getName());
-					}
+					else ErrorLog.addError("Problem generating CellML: Couldn't retrieve submodels from variable mapping " + var1.getName() + " > " + mappedvar.getName(), true, false);
+					
 				}
 			}
 		}
@@ -344,27 +424,45 @@ public class CellMLwriter extends ModelWriter {
 		}
 	}
 	
+	
+	/** Declare any SemSim-style Submodels that are part of the model */
+	private void declareSemSimSubmodels(){
+		
+		for(Submodel submodel : semsimmodel.getSubmodels()){
+			
+			if( ! submodel.isFunctional()){
+				rdfwriter.setRDFforSubmodelAnnotations(submodel);
+			}
+		}
+	}
+	
 	//*************END WRITE PROCEDURE********************************************//
 	
+	/**
+	 * Add a CellML component (AKA {@link FunctionalSubmodel}) to the CellML JDOM object
+	 * @param submodel The CellML component to add
+	 * @param truncatenames Whether to shorten the name of the submodel by only taking
+	 * the part of its name that follows the first ".".
+	 */
 	private void processFunctionalSubmodel(FunctionalSubmodel submodel, boolean truncatenames){
-		if( ! ((FunctionalSubmodel)submodel).isImported()){
+		if( ! submodel.isImported()){
 			Element comp = new Element("component", mainNS);
 			
-			// Add the RDF block for any singular annotation on the submodel
-			rdfblock.setRDFforSubmodelAnnotations(submodel);
+			// Add the RDF block for any annotations on the submodel
+			rdfwriter.setRDFforSubmodelAnnotations(submodel);
 			
 			comp.setAttribute("name", submodel.getName());  // Add name
 			
-			if( ! submodel.getMetadataID().equalsIgnoreCase("")) 
+			if(submodel.hasMetadataID()) 
 				comp.setAttribute("id", submodel.getMetadataID(), RDFNamespace.CMETA.createJdomNamespace());  // Add ID, if present
 			
 			// Add the variables
 			for(DataStructure ds : submodel.getAssociatedDataStructures()){
+				
 				Element variable = new Element("variable", mainNS);
-				
 				String initialval = ds.getStartValue();  // Overwritten later by getCellMLintialValue if ds is CellML-type variable
-				
 				String nameval = ds.getName();
+				
 				if(truncatenames && nameval.contains("."))
 					nameval = nameval.substring(nameval.indexOf(".")+1);
 				
@@ -378,12 +476,9 @@ public class CellMLwriter extends ModelWriter {
 					publicintval = cellmlvar.getPublicInterfaceValue();
 					privateintval = cellmlvar.getPrivateInterfaceValue();
 				}
-				// Otherwise, if the variable has a start value store it as the initial_value
-				else if(ds.hasStartValue())
-					initialval = ds.getStartValue();
 				
 				// Add the RDF block for any annotations
-				rdfblock.setRDFforDataStructureAnnotations(ds);
+				rdfwriter.setRDFforDataStructureAnnotations(ds);
 				
 				String metadataid = ds.getMetadataID();
 				// Add other attributes
@@ -398,24 +493,27 @@ public class CellMLwriter extends ModelWriter {
 				if(privateintval!=null && !privateintval.equals(""))
 					variable.setAttribute("private_interface", privateintval);
 				
-				if(ds.hasUnits()) variable.setAttribute("units", ds.getUnit().getName().replace(" ", "_"));
+				if(ds.hasUnits()){
+					String unitsname = oldAndNewUnitNameMap.get( ds.getUnit().getName());
+
+					variable.setAttribute("units",unitsname);
+				}
 				else variable.setAttribute("units", "dimensionless");
 				
 				comp.addContent(variable);
-				looseDataStructures.remove(ds);
 			}
 		
 			// Add the mathml
-			Computation cmptn = ((FunctionalSubmodel)submodel).getComputation();
+			Computation cmptn = submodel.getComputation();
 			
 			if(cmptn.getMathML() != null && ! cmptn.getMathML().isEmpty()){
-				comp.addContent(makeXMLContentFromStringForMathML(cmptn.getMathML()));
+				comp.addContent(makeXMLContentFromStringForMathML(cmptn.getMathML()));				
 			}
 			else{
 				String allmathml = "";
-				for(DataStructure ds : submodel.getAssociatedDataStructures()){
-					String mathml = ds.getComputation().getMathML();
-					allmathml = allmathml + "\n" + mathml;
+				
+				for(DataStructure ds : submodel.getAssociatedDataStructures()){					
+					allmathml = allmathml + "\n" + ds.getComputation().getMathML();
 				}
 				comp.addContent(makeXMLContentFromStringForMathML(allmathml));
 			}
@@ -423,17 +521,12 @@ public class CellMLwriter extends ModelWriter {
 		}
 	}
 	
-	@Override
-	public void writeToFile(File destination){
-		SemSimUtil.writeStringToFile(writeToString(), destination);
-	}
 	
-	@Override
-	public void writeToFile(URI destination){
-		SemSimUtil.writeStringToFile(writeToString(), new File(destination));
-	}
-
-	
+	/**
+	 * Takes a String of XML-formatted content and collects each MathML XML element
+	 * @param xml XML text
+	 * @return A list of all MathML elements in the XML text
+	 */
 	public static List<Content> makeXMLContentFromStringForMathML(String xml){
 		
 		xml = "<temp>\n" + xml + "\n</temp>";
@@ -450,7 +543,10 @@ public class CellMLwriter extends ModelWriter {
 	}
 	
 	
-	// Nested classes
+	/**
+	 * Class for representing CellML-style variable mappings across CelLML components
+	 * @author mneal
+	 */
 	public class CellMLConnection{
 		public FunctionalSubmodel sub1;
 		public FunctionalSubmodel sub2;
@@ -462,6 +558,11 @@ public class CellMLwriter extends ModelWriter {
 		}
 	}
 	
+	
+	/**
+	 * Class for representing groupings of CellML components
+	 * @author mneal
+	 */
 	public class CellMLGrouping{
 		public String rel;
 		public Map<FunctionalSubmodel, Element> submodelelementmap = new HashMap<FunctionalSubmodel, Element>();
@@ -470,4 +571,10 @@ public class CellMLwriter extends ModelWriter {
 			this.rel = rel;
 		}
 	}
+	
+	@Override
+	public AbstractRDFwriter getRDFwriter(){
+		return rdfwriter;
+	}
+
 }

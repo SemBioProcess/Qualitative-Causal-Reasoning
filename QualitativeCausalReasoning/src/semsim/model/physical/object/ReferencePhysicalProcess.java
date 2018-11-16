@@ -8,9 +8,16 @@ import semsim.annotation.ReferenceTerm;
 import semsim.definitions.SemSimRelations.SemSimRelation;
 import semsim.definitions.ReferenceOntologies;
 import semsim.definitions.SemSimTypes;
+import semsim.model.collection.SemSimModel;
 import semsim.model.physical.PhysicalProcess;
 import semsim.owl.SemSimOWLFactory;
 
+/**
+ * Class for representing physical processes that are defined using 
+ * controlled knowledge resource terms.
+ * @author mneal
+ *
+ */
 public class ReferencePhysicalProcess extends PhysicalProcess implements ReferenceTerm{
 	
 	public ReferencePhysicalProcess(URI uri, String description){
@@ -19,7 +26,7 @@ public class ReferencePhysicalProcess extends PhysicalProcess implements Referen
 		setName(description);
 	}
 	
-	
+	@Override
 	public ReferenceOntologyAnnotation getPhysicalDefinitionReferenceOntologyAnnotation(SemSimLibrary lib){
 		if(hasPhysicalDefinitionAnnotation()){
 			return new ReferenceOntologyAnnotation(SemSimRelation.HAS_PHYSICAL_DEFINITION, referenceuri, getDescription(), lib);
@@ -27,13 +34,12 @@ public class ReferencePhysicalProcess extends PhysicalProcess implements Referen
 		return null;
 	}
 	
+	@Override
 	public URI getPhysicalDefinitionURI() {
 		return referenceuri;
 	}
 	
-	/**
-	 * @return The name of the knowledge base that contains the URI used as the annotation value
-	 */
+	@Override
 	public String getNamewithOntologyAbreviation(SemSimLibrary semsimlib) {
 		return getName() + " (" + semsimlib.getReferenceOntologyAbbreviation(referenceuri) + ")";
 	}
@@ -47,7 +53,7 @@ public class ReferencePhysicalProcess extends PhysicalProcess implements Referen
 	protected boolean isEquivalent(Object obj) {
 		URI physdefuri = ((ReferencePhysicalProcess)obj).getPhysicalDefinitionURI();
 		
-		String physdefID = getTermID().replace(":", "_");
+		String physdefID = getTermFragment().replace(":", "_");
 		String thisID = SemSimOWLFactory.getIRIfragment(physdefuri.toString()).replace(":", "_");
 		
 		return (ReferenceOntologies.URIsAreFromSameReferenceOntology(physdefuri, referenceuri) 
@@ -55,7 +61,17 @@ public class ReferencePhysicalProcess extends PhysicalProcess implements Referen
 	}
 	
 	@Override
-	public String getTermID() {
+	public String getTermFragment() {
 		return SemSimOWLFactory.getIRIfragment(referenceuri.toString());
+	}
+	
+	@Override
+	public ReferencePhysicalProcess addToModel(SemSimModel model) {
+		return model.addReferencePhysicalProcess(this);
+	}
+	
+	@Override
+	public void removeFromModel(SemSimModel model) {
+		model.removePhysicalProcessFromCache(this);
 	}
 }

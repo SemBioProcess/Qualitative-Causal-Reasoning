@@ -1,7 +1,9 @@
 package semsim.writing;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.io.StreamDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -22,13 +25,16 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import semsim.SemSimLibrary;
 import semsim.annotation.Annotation;
 import semsim.annotation.ReferenceOntologyAnnotation;
 import semsim.annotation.ReferenceTerm;
+import semsim.annotation.Relation;
 import semsim.definitions.SemSimRelations;
 import semsim.definitions.SemSimTypes;
+import semsim.fileaccessors.ModelAccessor;
 import semsim.definitions.SemSimRelations.StructuralRelation;
 import semsim.definitions.SemSimRelations.SemSimRelation;
 import semsim.model.Importable;
@@ -36,20 +42,28 @@ import semsim.model.collection.FunctionalSubmodel;
 import semsim.model.collection.SemSimModel;
 import semsim.model.collection.Submodel;
 import semsim.model.computational.Event;
-import semsim.model.computational.Event.EventAssignment;
+import semsim.model.computational.EventAssignment;
 import semsim.model.computational.RelationalConstraint;
+import semsim.model.computational.SBMLInitialAssignment;
 import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.computational.datastructures.MappableVariable;
 import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
+import semsim.model.physical.PhysicalDependency;
 import semsim.model.physical.PhysicalEntity;
+import semsim.model.physical.PhysicalForce;
 import semsim.model.physical.PhysicalProcess;
 import semsim.model.physical.PhysicalModelComponent;
 import semsim.model.physical.object.CompositePhysicalEntity;
-import semsim.model.physical.object.PhysicalPropertyinComposite;
+import semsim.model.physical.object.PhysicalPropertyInComposite;
 import semsim.owl.SemSimOWLFactory;
 import semsim.utilities.SemSimUtil;
 
+/**
+ * Class for writing out a SemSim model as an OWL ontology
+ * @author mneal
+ *
+ */
 public class SemSimOWLwriter extends ModelWriter {
 	public OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	protected OWLOntology ont;
@@ -63,6 +77,7 @@ public class SemSimOWLwriter extends ModelWriter {
 	
 	public SemSimOWLwriter(SemSimModel model) throws OWLOntologyCreationException {
 		super(model);
+
 		namespace = model.getNamespace();
 		
 		// Create a blank semsim ontology with just the base classes
@@ -70,37 +85,64 @@ public class SemSimOWLwriter extends ModelWriter {
 		Set<OWLAxiom> allbaseaxioms = manager.loadOntologyFromOntologyDocument(in).getAxioms();
 		IRI ontiri = IRI.create(namespace.substring(0, namespace.length()-1));  // Gets rid of '#' at end of namespace
 		ont = manager.createOntology(allbaseaxioms, ontiri);
+		
 	}
 	
-	public void writeToFile(File destination) throws OWLException{
-		createOWLOntologyFromModel();
-		manager.saveOntology(ont,new RDFXMLOntologyFormat(), IRI.create(destination));
+	@Override 
+	public String encodeModel()  {
+		String modasstring = null;
+		try {
+			createOWLOntologyFromModel();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			StreamDocumentTarget target = new StreamDocumentTarget(baos);
+			
+	        manager.saveOntology(ont, target);
+	        modasstring = new String(baos.toByteArray(), "UTF-8");
+		} catch (OWLException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+        return modasstring;
 	}
 	
-	public void writeToFile(URI uri) throws OWLException{
-		createOWLOntologyFromModel();
-		manager.saveOntology(ont, new RDFXMLOntologyFormat(), IRI.create(uri));
+	@Override
+	public boolean writeToStream(OutputStream outstream) {
+		try {
+			createOWLOntologyFromModel();
+			manager.saveOntology(ont,new RDFXMLOntologyFormat(), outstream);
+		} catch (OWLException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
 	//*****************************OWL CREATION METHODS*************************//
 	
-	public OWLOntology createOWLOntologyFromModel() throws OWLException{	
-		getLocalDataStuctures();
-		addUnits();	
-		addEvents();
-		addDataStructures();
-		setRelations();
-		addSubModels();
-		addPhysicalComponentAnnotations();
+	/** @return An OWL_API:OWLOntology object representing the SemSim model
+	 * @throws OWLException
+	 */
+	public OWLOntology createOWLOntologyFromModel(){	
+		try {
+			getLocalDataStuctures();
+			addUnits();	
+			addEvents();
+			addSBMLinitialAssignments();
+			addDataStructures();
+			setRelations();
+			addSubModels();
+			addAnnotationsOnCustomPhysicalComponents();
+		} catch (OWLException e) {
+			e.printStackTrace();
+		}
+		
 		addModelAnnotations();
 		
 		return ont;
 	}
 	
-/** Add the computational model components: units of measurement, data structures, computations
- * 	Create a list of the data structures that need to be preserved in the model
- *  Exclude those that are imports of imports
-*/	
+	/**
+	 * 	Create a list of the data structures that need to be preserved in the model
+	 *  Exclude those that are imports of imports
+	*/	
 	private void getLocalDataStuctures() throws OWLException {
 		localdss.addAll(semsimmodel.getAssociatedDataStructures());
 		
@@ -112,6 +154,11 @@ public class SemSimOWLwriter extends ModelWriter {
 		}
 	}
 	
+	
+	/**
+	 * Collect the model's physical units and add them to the ontology
+	 * @throws OWLException
+	 */
 	private void addUnits() throws OWLException {
 		// First add the units. 
 		Set<UnitOfMeasurement> unitstoadd = new HashSet<UnitOfMeasurement>();
@@ -142,13 +189,16 @@ public class SemSimOWLwriter extends ModelWriter {
 			for(UnitFactor factor : uom.getUnitFactors()){
 				String factoruri = semsimmodel.getNamespace() + "UNIT_" + SemSimOWLFactory.URIencoding(factor.getBaseUnit().getName());
 				SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, unituri, factoruri,
-						SemSimRelation.HAS_UNIT_FACTOR, SemSimRelation.UNIT_FACTOR_FOR, 
+						SemSimRelation.HAS_UNIT_FACTOR, null, 
 						makeUnitFactorAnnotations(factor), manager);
 			}
 		}
 	}
 	
-	// Add Event info to model
+	/**
+	 * Collect the model's Events and add them to the ontology
+	 * @throws OWLException
+	 */
 	private void addEvents() throws OWLException{
 		
 		int suffix = 0;
@@ -210,13 +260,43 @@ public class SemSimOWLwriter extends ModelWriter {
 				// Associate the assignment with the data structure's computation that it effects
 				SemSimOWLFactory.setIndObjectProperty(ont, outputdsuristring + "_computation", 
 						eventuristring, SemSimRelation.HAS_EVENT, null, manager);
-			}
+			}			
 		}
 	}
 	
+	
+	/**
+	 *  Add the SBML-style initial assignments to the ontology
+	 * @throws OWLException 
+	 */
+	private void addSBMLinitialAssignments() throws OWLException{
+		for(SBMLInitialAssignment ssia : semsimmodel.getSBMLInitialAssignments()){
+			String eaname = ssia.getOutput().getName() + "_SBML_initial_assignment"; 
+			OWLClass iaparentclass = factory.getOWLClass(IRI.create(ssia.getSemSimClassURI()));
+			String iauristring = namespace + eaname;
+			String outputdsuristring = namespace + ssia.getOutput().getName();
+			
+			// Create event assignment individual and attach properties
+			SemSimOWLFactory.createSemSimIndividual(ont, iauristring, iaparentclass, "", manager);
+			SemSimOWLFactory.setIndObjectProperty(ont, iauristring, outputdsuristring,
+					SemSimRelation.HAS_OUTPUT, null, manager);
+			SemSimOWLFactory.setIndDatatypeProperty(ont, iauristring, SemSimRelation.HAS_MATHML,
+					ssia.getMathML(), manager);
+		}
+	}
+	
+	
+	/**
+	 * Collect the {@link DataStructure}s in the model and add them 
+	 * to the ontology
+	 * @throws OWLException
+	 */
 	private void addDataStructures() throws OWLException {
 		
-		for(DataStructure ds : localdss){		
+		Map<DataStructure, String> dswithphyscompsanduris = new HashMap<DataStructure, String>();
+		
+		for(DataStructure ds : localdss){	
+			
 			String dsuri = namespace + SemSimOWLFactory.URIencoding(ds.getName());
 			OWLNamedIndividual dsind = factory.getOWLNamedIndividual(IRI.create(dsuri));
 			// Set the RDF:comment (the free text definition of the data structure)
@@ -233,45 +313,47 @@ public class SemSimOWLwriter extends ModelWriter {
 				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.HAS_PHYSICAL_DEFINITION, refterm.getPhysicalDefinitionURI(), manager);
 			}
 			
-			// Classify the physical property under its reference ontology class
-			// that it is annotated against
-			if(ds.hasPhysicalProperty() || ds.hasAssociatedPhysicalComponent()){
-				PhysicalPropertyinComposite dspp = ds.getPhysicalProperty();
-				
-				//Create dummy property if one has not been assigned
-				if (dspp==null)  dspp = new PhysicalPropertyinComposite("",URI.create(""));
-				
-				URI propertyuri = SemSimOWLFactory.getURIforPhysicalProperty(semsimmodel, ds);
-				createPhysicalModelIndividual(dspp, propertyuri.toString());
-				// Log the physical property and its URI
-				singularPMCsAndUrisForDataStructures.put(dspp, propertyuri);
-				SemSimOWLFactory.setIndObjectProperty(ont, propertyuri.toString(),
-						dsuri, SemSimRelation.HAS_COMPUTATIONAL_COMPONENT,
-						SemSimRelation.IS_COMPUTATIONAL_COMPONENT_FOR, manager);
-				if(ds.getComputation()!=null && !(ds instanceof MappableVariable))
-					SemSimOWLFactory.setIndObjectProperty(ont, propertyuri.toString(),
-						dsuri + "_dependency", SemSimRelation.IS_DETERMINED_BY, SemSimRelation.DETERMINES, manager);
-				// Create physical entity and physical process individuals, link to properties
-				processAssociatedCompositeofDataStructure(ds);
-				
+			// Determine whether the variable is a MappableVariable and has it's parent
+			// functional submodel present
+			boolean writeoutcomp = ds.getComputation() != null;
+			boolean parentSubmodelPresent = false;
+						
+			if(ds instanceof MappableVariable){
+				writeoutcomp = semsimmodel.getParentFunctionalSubmodelForMappableVariable((MappableVariable)ds) == null;
+				parentSubmodelPresent = ! writeoutcomp;
 			}
 			
 			// If the data structure is solved with an explicit computation, store that info
-			if(!(ds instanceof MappableVariable) && ds.getComputation()!=null){
+			if(writeoutcomp){
+							
+				String compuristring = dsuri + "_computation";
+				String depuristring = dsuri + "_dependency";
+				
 				SemSimOWLFactory.createSemSimIndividual(ont, dsuri + "_computation",
 						factory.getOWLClass(SemSimTypes.COMPUTATION.getIRI()), "", manager);
 			
-				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri + "_computation", SemSimRelation.HAS_COMPUTATIONAL_CODE, ds.getComputation().getComputationalCode(), manager);
-				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri + "_computation", SemSimRelation.HAS_MATHML, ds.getComputation().getMathML(), manager);
-				SemSimOWLFactory.createSemSimIndividual(ont, dsuri + "_dependency",
-						factory.getOWLClass(SemSimTypes.PHYSICAL_DEPENDENCY.getIRI()), "", manager);
-				SemSimOWLFactory.setIndObjectProperty(ont, dsuri + "_computation",
-						dsuri + "_dependency", SemSimRelation.IS_COMPUTATIONAL_COMPONENT_FOR,
-						SemSimRelation.HAS_COMPUTATIONAL_COMPONENT, manager);
-				SemSimOWLFactory.setIndObjectProperty(ont, dsuri, dsuri + "_computation",
+				SemSimOWLFactory.setIndDatatypeProperty(ont, compuristring, SemSimRelation.HAS_COMPUTATIONAL_CODE, ds.getComputation().getComputationalCode(), manager);
+				SemSimOWLFactory.setIndDatatypeProperty(ont, compuristring, SemSimRelation.HAS_MATHML, ds.getComputation().getMathML(), manager);
+				SemSimOWLFactory.setIndObjectProperty(ont, dsuri, compuristring,
 						SemSimRelation.IS_OUTPUT_FOR,
 						SemSimRelation.HAS_OUTPUT, manager);
 				
+				// If the physical dependency is annotated against an OPB reference class, store the annotation
+				if(ds.getComputation().hasPhysicalDependency()){
+					PhysicalDependency dep = ds.getComputation().getPhysicalDependency();
+	
+					if(dep.hasPhysicalDefinitionAnnotation()){
+						createPhysicalModelIndividual(dep, depuristring);
+						
+						// We only store explicit dependency individuals if they are annotated against
+						// an OPB reference term. Here we link the dependencies with the computations.
+						SemSimOWLFactory.setIndObjectProperty(ont, compuristring,
+								depuristring, SemSimRelation.IS_COMPUTATIONAL_COMPONENT_FOR,
+								SemSimRelation.HAS_COMPUTATIONAL_COMPONENT, manager);
+					}
+				}
+				else 
+							
 				// Put the hasInput and hasRolePlayer data in the SemSim model
 				for(DataStructure inputds : ds.getComputation().getInputs()){
 					String inputuri = namespace + SemSimOWLFactory.URIencoding(inputds.getName());
@@ -280,16 +362,23 @@ public class SemSimOWLwriter extends ModelWriter {
 				}				
 			}
 			
-			if(ds.hasSolutionDomain()){
+			// Store the solution domain info for the data structure
+			if(ds.hasSolutionDomain())
 				SemSimOWLFactory.setIndObjectProperty(ont, dsuri, namespace + SemSimOWLFactory.URIencoding(ds.getSolutionDomain().getName()),
-						SemSimRelation.HAS_SOLUTION_DOMAIN, SemSimRelation.IS_SOLUTION_DOMAIN, manager);
-			}
-			SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.IS_SOLUTION_DOMAIN, ds.isSolutionDomain(), manager);
-			SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.IS_DECLARED, ds.isDeclared(), manager);
+						SemSimRelation.HAS_SOLUTION_DOMAIN, null, manager);
+			
+			// If the data structure is a solution domain, explicitly state so
+			if(ds.isSolutionDomain())
+				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.IS_SOLUTION_DOMAIN, (Boolean)true, manager);
+			
+			// If the data structure is NOT declared, explicitly state so
+			if( ! ds.isDeclared())
+				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.IS_DECLARED, (Boolean)false, manager);
+			
 			SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.METADATA_ID, ds.getMetadataID(), manager);
 			
 			// Assert CellML-type mappings between data structures
-			if(ds instanceof MappableVariable){
+			if(parentSubmodelPresent){
 				for(MappableVariable var : ((MappableVariable)ds).getMappedTo()){
 					String varuri = namespace + SemSimOWLFactory.URIencoding(var.getName());
 					if(localdss.contains(var))
@@ -311,11 +400,12 @@ public class SemSimOWLwriter extends ModelWriter {
 			}
 			
 			// If not a CellML-type variable, store startValue info
-			else 
+			else if(ds.hasStartValue())
 				SemSimOWLFactory.setIndDatatypeProperty(ont, dsuri, SemSimRelation.HAS_START_VALUE, ds.getStartValue(), manager);
 			
 			// Get the units info
 			if(ds.hasUnits()){
+				
 				if(ds.getUnit().getParentImport()==null){
 					UnitOfMeasurement uom = ds.getUnit();
 					String unituri = semsimmodel.getNamespace() + "UNIT_" + SemSimOWLFactory.URIencoding(uom.getName());
@@ -323,10 +413,53 @@ public class SemSimOWLwriter extends ModelWriter {
 							SemSimRelation.UNIT_FOR, manager);
 				}
 			}
+			
+			// If the data structure has a physical property, physical entity, or physical process associated
+			// with it as an annotation, include in next loop through data structures 
+			if(ds.hasPhysicalProperty() || ds.hasAssociatedPhysicalComponent()) dswithphyscompsanduris.put(ds, dsuri);
+			
+
 		// If not declared and not used to compute anything, leave the data structure out of the model
+		}
+		
+		// Second pass through data structures to deal with physical model side of things.
+		// This is also separated from the above loop so that we can establish all the OWL
+		// individuals on the computational side and make sure we don't use the same URIs later
+		// for physical model components.
+		// (when creating new individuals later, the writer looks at existing individuals and 
+		// creates unique URIs). 
+		for(DataStructure ds : dswithphyscompsanduris.keySet()){
+			
+			String dsuri = dswithphyscompsanduris.get(ds);
+
+			// Classify the physical property under its reference ontology class
+			// that it is annotated against
+			PhysicalPropertyInComposite dspp = ds.getPhysicalProperty();
+				
+			//Create empty property if one has not been assigned
+			if (dspp==null)  dspp = new PhysicalPropertyInComposite("",URI.create(""));
+			
+			URI propertyuri = SemSimOWLFactory.getURIforPhysicalProperty(semsimmodel, ds);
+			createPhysicalModelIndividual(dspp, propertyuri.toString());
+			
+			// Log the physical property and its URI
+			singularPMCsAndUrisForDataStructures.put(dspp, propertyuri);
+			
+			SemSimOWLFactory.setIndObjectProperty(ont, propertyuri.toString(),
+					dsuri, SemSimRelation.HAS_COMPUTATIONAL_COMPONENT,
+					SemSimRelation.IS_COMPUTATIONAL_COMPONENT_FOR, manager);
+			
+			// Create physical entity and physical process individuals, link to properties
+			processAssociatedCompositeOfDataStructure(ds);
 		}
 	}
 		
+	
+	/**
+	 * Collect the {@link RelationalConstraint}s in the model and add
+	 * them to the ontology
+	 * @throws OWLException
+	 */
 	private void setRelations() throws OWLException {
 		int r = 0;
 		OWLClass relparent = factory.getOWLClass(SemSimTypes.RELATIONAL_CONSTRAINT.getIRI());
@@ -339,27 +472,46 @@ public class SemSimOWLwriter extends ModelWriter {
 		}
 	}
 	
-	/** Add source, sink and mediator info to model */
+	
+	/** Add process's source, sink and mediator info to the ontology */
 	private void setProcessParticipants(PhysicalProcess proc) throws OWLException {
-				for(PhysicalEntity source : proc.getSourcePhysicalEntities()){	
-					Set<OWLAnnotation> anns = makeMultiplierAnnotation(source, proc.getSourceStoichiometry(source));
-					SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
-							compositeEntitiesAndIndexes.get(source).toString(), SemSimRelation.HAS_SOURCE,
-							null, anns, manager);
-				}
-				for(PhysicalEntity sink : proc.getSinkPhysicalEntities()){
-					Set<OWLAnnotation> anns = makeMultiplierAnnotation(sink, proc.getSinkStoichiometry(sink));
-					SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
-							compositeEntitiesAndIndexes.get(sink).toString(), SemSimRelation.HAS_SINK,
-							null, anns, manager);
-				}
-				for(PhysicalEntity mediator : proc.getMediatorPhysicalEntities()){
-					SemSimOWLFactory.setIndObjectProperty(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
-							compositeEntitiesAndIndexes.get(mediator).toString(), SemSimRelation.HAS_MEDIATOR,
-							null, manager);
-				}
+		for(PhysicalEntity source : proc.getSourcePhysicalEntities()){	
+			Set<OWLAnnotation> anns = makeMultiplierAnnotation(source, proc.getSourceStoichiometry(source));
+			SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
+					compositeEntitiesAndIndexes.get(source).toString(), SemSimRelation.HAS_SOURCE,
+					null, anns, manager);
+		}
+		for(PhysicalEntity sink : proc.getSinkPhysicalEntities()){
+			Set<OWLAnnotation> anns = makeMultiplierAnnotation(sink, proc.getSinkStoichiometry(sink));
+			SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
+					compositeEntitiesAndIndexes.get(sink).toString(), SemSimRelation.HAS_SINK,
+					null, anns, manager);
+		}
+		for(PhysicalEntity mediator : proc.getMediatorPhysicalEntities()){
+			SemSimOWLFactory.setIndObjectProperty(ont, singularPMCsAndUrisForDataStructures.get(proc).toString(),
+					compositeEntitiesAndIndexes.get(mediator).toString(), SemSimRelation.HAS_MEDIATOR,
+					null, manager);
+		}
 	}
 	
+	
+	/** Add force's sources and sinks to the ontology */
+	private void setForceParticipants(PhysicalForce force) throws OWLException {
+		for(PhysicalEntity source : force.getSources()){	
+			SemSimOWLFactory.setIndObjectProperty(ont, singularPMCsAndUrisForDataStructures.get(force).toString(),
+					compositeEntitiesAndIndexes.get(source).toString(), SemSimRelation.HAS_SOURCE, null, manager);
+		}
+		for(PhysicalEntity sink : force.getSinks()){
+			SemSimOWLFactory.setIndObjectProperty(ont, singularPMCsAndUrisForDataStructures.get(force).toString(),
+					compositeEntitiesAndIndexes.get(sink).toString(), SemSimRelation.HAS_SINK, null, manager);
+		}
+	}
+	
+	
+	/**
+	 * Collect the Submodels in the model and add them to the ontology
+	 * @throws OWLException
+	 */
 	private void addSubModels() throws OWLException {
 		// Process submodels
 		Set<Subsumption> cellmlsubsumptions = new HashSet<Subsumption>();
@@ -395,7 +547,7 @@ public class SemSimOWLwriter extends ModelWriter {
 							SemSimRelation.HAS_ASSOCIATED_DATA_STRUCTURE, null, manager);
 				}
 				
-				if(!toplevelimport){
+				if( ! toplevelimport){
 					
 					// If a functional sub-model, store computation.
 					if(sub instanceof FunctionalSubmodel){
@@ -408,9 +560,12 @@ public class SemSimOWLwriter extends ModelWriter {
 						
 						// assert all CellML-type containment and encapsulation relationships 
 						for(String rel : ((FunctionalSubmodel)sub).getRelationshipSubmodelMap().keySet()){
+							
 							for(FunctionalSubmodel subsub : ((FunctionalSubmodel)sub).getRelationshipSubmodelMap().get(rel)){
 								Subsumption subsumption = null;
+								
 								for(Subsumption g : cellmlsubsumptions){
+									
 									if(g.parent==sub && g.child==subsub){
 										subsumption = g;
 										subsumption.rels.add(rel);
@@ -429,6 +584,9 @@ public class SemSimOWLwriter extends ModelWriter {
 						SemSimOWLFactory.setIndObjectProperty(ont, indstr, namespace + SemSimOWLFactory.URIencoding(subsub.getName()), 
 								SemSimRelation.INCLUDES_SUBMODEL, null, manager);
 					}
+					
+					if(sub.hasMetadataID())
+						SemSimOWLFactory.setIndDatatypeProperty(ont, indstr, SemSimRelation.METADATA_ID, sub.getMetadataID(), manager);
 				}
 				// Otherwise add the assertion that the submodel is imported, but leave out the rest of the info
 				else{
@@ -437,25 +595,29 @@ public class SemSimOWLwriter extends ModelWriter {
 							makeAnnotationsForImport(((FunctionalSubmodel)sub)), manager);
 				}
 			}
+			
 		}
+		
 		// Assert the annotations needed for CellML component groupings
 		for(Subsumption subsump : cellmlsubsumptions){
 			String indstr = namespace + SemSimOWLFactory.URIencoding(subsump.parent.getName());
 			String subindstr = namespace + SemSimOWLFactory.URIencoding(subsump.child.getName());
 			Set<OWLAnnotation> anns = new HashSet<OWLAnnotation>();
-			for(String rel : subsump.rels){
+			
+			for(String rel : subsump.rels)
 				anns.addAll(makeSubmodelSubsumptionAnnotation(rel));
-			}
+			
 			SemSimOWLFactory.setIndObjectPropertyWithAnnotations(ont, indstr, subindstr,
 					SemSimRelation.INCLUDES_SUBMODEL,
 					null, anns, manager);
 		}
 	}
 	
-	/** 
-	 * Go through custom physical model components and assert their annotations, if present
+	/**
+	 * Go through custom physical model components and assert their annotations, if present 
+	 * @throws OWLException
 	 */
-	private void addPhysicalComponentAnnotations() throws OWLException {	
+	private void addAnnotationsOnCustomPhysicalComponents() throws OWLException {	
 		
 		Set<PhysicalModelComponent> custs = new HashSet<PhysicalModelComponent>();
 		custs.addAll(semsimmodel.getCustomPhysicalEntities());
@@ -489,6 +651,7 @@ public class SemSimOWLwriter extends ModelWriter {
 					indURIstring = singularPMCsAndUrisForDataStructures.get(pmc).toString();
 				
 				else{
+					
 					for(String custind : SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, pmc.getSemSimClassURI().toString())){
 						OWLNamedIndividual theind = factory.getOWLNamedIndividual(IRI.create(custind));
 						
@@ -505,45 +668,87 @@ public class SemSimOWLwriter extends ModelWriter {
 		}
 	}
 	
-	// Add the model's curational metadata
-	private void addModelAnnotations() throws OWLException {
+	/**
+	 * Add the model's curational metadata
+	 * @throws OWLException
+	 */
+	private void addModelAnnotations() {
 		SemSimOWLFactory.addOntologyAnnotation(ont, SemSimLibrary.SEMSIM_VERSION_IRI, Double.toString(SemSimLibrary.SEMSIM_VERSION), manager);
-		
-		if(semsimmodel.getLegacyCodeLocation()!=null)
+
+		if(semsimmodel.getLegacyCodeLocation()!=null){
+			ModelAccessor legacyma = semsimmodel.getLegacyCodeLocation();
+			String fileloc = legacyma.getFullPath();
+			
 			SemSimOWLFactory.addOntologyAnnotation(ont, SemSimModel.LEGACY_CODE_LOCATION_IRI, 
-					semsimmodel.getLegacyCodeLocation().getModelURI().toString(), manager);
+					fileloc, manager);
+		}
+
+		if(semsimmodel.hasMetadataID()) 
+			SemSimOWLFactory.addOntologyAnnotation(ont, SemSimRelation.MODEL_METADATA_ID.getIRI(), semsimmodel.getMetadataID(), manager);
+
+		if(semsimmodel.hasDescription())
+			SemSimOWLFactory.addOntologyAnnotation(ont, OWLRDFVocabulary.RDFS_COMMENT.getIRI(), semsimmodel.getDescription(), manager);
 		
-		ArrayList<Annotation> anns = semsimmodel.getCurationalMetadata().getAnnotationList();
-		anns.addAll(semsimmodel.getAnnotations());
-		for(Annotation ann : anns){
-				String str = (String)ann.getValue();
-				SemSimOWLFactory.addOntologyAnnotation(ont, ann.getRelation().getURI().toString(), str, "en", manager);
+		
+		// Write out reference ontology annotations. Because we can't use the same relation as an annotation property
+		// and as a datatype property. So we limit the model-level annotations to bqmodel qualifiers.
+		for(Annotation ann : semsimmodel.getAnnotations()){
+			String str;
+			
+			if(ann instanceof ReferenceOntologyAnnotation){
+				Relation rel = ann.getRelation();
+				
+				rel = SemSimRelations.getSynonymousModelLevelRelationForSemSimOWLwriting(rel);// Make sure to use any necessary synonymous relations for ontology-level annotations
+				
+				str = ((ReferenceOntologyAnnotation)ann).getReferenceURI().toString();
+			}
+			else str = ann.getValue().toString();
+
+			SemSimOWLFactory.addOntologyAnnotation(ont, ann.getRelation().getURI().toString(), str, "en", manager);
 		}
 	}
 	
 	//********************************************************************//
 	//*****************************HELPER METHODS*************************//
 	
-	private void processAssociatedCompositeofDataStructure(DataStructure ds) throws OWLException {
+	/**
+	 * Add the physical model component associated with an input data structure
+	 * to the ontology. Link it to the physical property that it bears.
+	 * @param ds A SemSim {@link DataStructure}
+	 * @throws OWLException
+	 */
+	private void processAssociatedCompositeOfDataStructure(DataStructure ds) throws OWLException {
+		
 		if(ds.hasAssociatedPhysicalComponent()){				
 			// Create the new physical model individual and get what it's a physical property of
 			PhysicalModelComponent pmc = ds.getAssociatedPhysicalModelComponent();
+			
 			// If it's not a composite physical entity
-			if(!pmc.isType(SemSimTypes.COMPOSITE_PHYSICAL_ENTITY)){
+			if( ! pmc.isType(SemSimTypes.COMPOSITE_PHYSICAL_ENTITY)){
 				String uristring = null;
 				// Need to make sure that each process gets its own physical property individual, even
 				// if some are annotated as being the exact same process
 
 				uristring = logSingularPhysicalComponentAndGetURIasString(pmc, namespace);
-				SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.PHYSICAL_ENTITY.getURIasString());
+				//SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.PHYSICAL_ENTITY.getURIasString());
 
 				// Make sure to log all the participating entities - some may not be directly associated
-				// with a data structure but only used to define the process
-
-				for(PhysicalEntity ent : ((PhysicalProcess)pmc).getParticipants()){
-					URI uri = processCompositePhysicalEntity((CompositePhysicalEntity) ent, namespace);
-					if (!compositeEntitiesAndIndexes.containsKey(ent)) {
-						compositeEntitiesAndIndexes.put((CompositePhysicalEntity) ent, uri);
+				// with a data structure but only used to define the process			
+				if(pmc instanceof PhysicalProcess){
+					for(PhysicalEntity ent : ((PhysicalProcess)pmc).getParticipants()){
+						URI uri = processCompositePhysicalEntity((CompositePhysicalEntity) ent, namespace);
+						
+						if (!compositeEntitiesAndIndexes.containsKey(ent))
+							compositeEntitiesAndIndexes.put((CompositePhysicalEntity) ent, uri);
+					}
+				}
+				// Otherwise we assume the associated physical model component is a force
+				else{
+					for(PhysicalEntity ent : ((PhysicalForce)pmc).getParticipants()){
+						URI uri = processCompositePhysicalEntity((CompositePhysicalEntity) ent, namespace);
+						
+						if (!compositeEntitiesAndIndexes.containsKey(ent))
+							compositeEntitiesAndIndexes.put((CompositePhysicalEntity) ent, uri);
 					}
 				}
 						
@@ -551,10 +756,12 @@ public class SemSimOWLwriter extends ModelWriter {
 				if(!SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.PHYSICAL_MODEL_COMPONENT.getURIasString()).contains(uristring)){
 					createPhysicalModelIndividual(pmc, uristring);
 				}
-					// Connect the new individual to its property
+				// Connect the new individual to its property
 				SemSimOWLFactory.setIndObjectProperty(ont, SemSimOWLFactory.getURIforPhysicalProperty(semsimmodel, ds).toString(), uristring, 
 						SemSimRelation.PHYSICAL_PROPERTY_OF, SemSimRelation.HAS_PHYSICAL_PROPERTY, manager);
-				setProcessParticipants((PhysicalProcess)pmc);
+				
+				if(pmc instanceof PhysicalProcess) setProcessParticipants((PhysicalProcess)pmc);
+				else if(pmc instanceof PhysicalForce) setForceParticipants((PhysicalForce)pmc);
 			}
 			else {
 
@@ -564,29 +771,37 @@ public class SemSimOWLwriter extends ModelWriter {
 						indexuri.toString(), SemSimRelation.PHYSICAL_PROPERTY_OF, SemSimRelation.HAS_PHYSICAL_PROPERTY, manager);
 			}
 		}
-		
 	}
 	
+	
+	/**
+	 * Add info about a {@link CompositePhysicalEntity} to the ontology
+	 * @param cpe A {@link CompositePhysicalEntity}
+	 * @param namespace Ontology namespace
+	 * @return OWL Individual URI of the index physical entity for the input
+	 * {@link CompositePhysicalEntity}
+	 * @throws OWLException
+	 */
 	private URI processCompositePhysicalEntity(CompositePhysicalEntity cpe, String namespace) throws OWLException{			
 		// check if an equivalent nextcpe already exists
 		cpe = SemSimUtil.getEquivalentCompositeEntityIfAlreadyInMap(cpe, compositeEntitiesAndIndexes);
 		
-		if(compositeEntitiesAndIndexes.containsKey(cpe)) {
+		if(compositeEntitiesAndIndexes.containsKey(cpe))
 			return compositeEntitiesAndIndexes.get(cpe);
-		}
+		
 		// If we haven't added this composite entity yet
-		URI compuri = cpe.makeURI(namespace);
-		SemSimOWLFactory.createSemSimIndividual(ont, compuri.toString(), 
+		URI cpeuri = makeURIforPhysicalModelComponent(namespace, cpe);
+		SemSimOWLFactory.createSemSimIndividual(ont, cpeuri.toString(), 
 				factory.getOWLClass(SemSimTypes.COMPOSITE_PHYSICAL_ENTITY.getIRI()), "", manager);
 
 		PhysicalEntity indexent = cpe.getArrayListOfEntities().get(0);
 		
 		// Create a unique URI for the index physical entity
-		String indexuristring = makeURIforPhysicalModelComponent(namespace, indexent, SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.PHYSICAL_MODEL_COMPONENT.getURIasString())).toString();
+		String indexuristring = makeURIforPhysicalModelComponent(namespace, indexent).toString();
 		URI indexuri = URI.create(indexuristring);
 		
 		compositeEntitiesAndIndexes.put(cpe, indexuri);
-		SemSimOWLFactory.setIndObjectProperty(ont, compuri.toString(), indexuristring, StructuralRelation.HAS_INDEX_ENTITY, 
+		SemSimOWLFactory.setIndObjectProperty(ont, cpeuri.toString(), indexuristring, StructuralRelation.HAS_INDEX_ENTITY, 
 				StructuralRelation.INDEX_ENTITY_FOR, manager);
 
 		// create the index entity, put reference class in ontology if not there already
@@ -615,15 +830,14 @@ public class SemSimOWLwriter extends ModelWriter {
 			// If we're at the end of the composite
 			else{
 				// If it's an entity we haven't processed yet
-				if(!singularPMCsAndUrisForDataStructures.containsKey(nextcpe.getArrayListOfEntities().get(0))){
+				if( ! singularPMCsAndUrisForDataStructures.containsKey(nextcpe.getArrayListOfEntities().get(0))){
 					nexturi = URI.create(logSingularPhysicalComponentAndGetURIasString(nextcpe.getArrayListOfEntities().get(0),namespace));
 					createPhysicalModelIndividual(nextcpe.getArrayListOfEntities().get(0), nexturi.toString());
 					singularPMCsAndUrisForDataStructures.put(nextcpe.getArrayListOfEntities().get(0), nexturi);
 				}
 				// Otherwise get the terminal entity that we logged previously
-				else{
-					nexturi = singularPMCsAndUrisForDataStructures.get(nextcpe.getArrayListOfEntities().get(0));
-				}
+				else nexturi = singularPMCsAndUrisForDataStructures.get(nextcpe.getArrayListOfEntities().get(0));
+				
 			}
 			// Establish structural relationship between parts of composite annotation
 			StructuralRelation rel = cpe.getArrayListOfStructuralRelations().get(0);
@@ -633,21 +847,29 @@ public class SemSimOWLwriter extends ModelWriter {
 		return indexuri;
 	}
 	
+	
+	/**
+	 * Add a singular physical component to the ontology and return its corresponding URI
+	 * as a String
+	 * @param pmc The {@link PhysicalModelComponent} to add to the ontology
+	 * @param namespace Ontology namespace
+	 * @return The {@link PhysicalModelComponent}'s corresponding URI in the ontology
+	 * @throws OWLException
+	 */
 	private String logSingularPhysicalComponentAndGetURIasString(PhysicalModelComponent pmc, String namespace) throws OWLException{
 		String uristring = null;
+		
 		if(singularPMCsAndUrisForDataStructures.containsKey(pmc)){
 			uristring = singularPMCsAndUrisForDataStructures.get(pmc).toString();
 		}
 		else{
-			URI uri = null;
+			URI uri = makeURIforPhysicalModelComponent(namespace, pmc);
+
 			if(pmc instanceof CompositePhysicalEntity){
-				CompositePhysicalEntity cpe = (CompositePhysicalEntity)pmc;
-				// This should really associate the URI of the index entity with the CPE. Or should it?
-				uri = cpe.makeURI(namespace);
+				// Maybe this should really associate the URI of the index entity with the CPE.
 				return uri.toString();
 			}
 			else{
-				uri = makeURIforPhysicalModelComponent(namespace, pmc, SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.PHYSICAL_MODEL_COMPONENT.getURIasString()));
 				uristring = uri.toString();
 				singularPMCsAndUrisForDataStructures.put(pmc, uri);
 			}
@@ -655,47 +877,75 @@ public class SemSimOWLwriter extends ModelWriter {
 		return uristring;
 	}
 	
-	private URI makeURIforPhysicalModelComponent(String namespace, PhysicalModelComponent pmc, Set<String> existinguris){
+	
+	/**
+	 * Create a unique URI for a physical model component in the ontology
+	 * @param namespace Ontology namespace
+	 * @param pmc A {@link PhysicalModelComponent}
+	 * @return URI corresponding to the input component
+	 * @throws OWLException
+	 */
+	private URI makeURIforPhysicalModelComponent(String namespace, PhysicalModelComponent pmc) throws OWLException{
+		
+		Set<String> existinguris = SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.SEMSIM_COMPONENT.getURIasString());
+
 		String uritrunk = namespace;
 		URI uri = null;
 
-		if(! (pmc instanceof PhysicalProcess)){
-			
-			if(pmc.hasPhysicalDefinitionAnnotation()){
-				uritrunk = uritrunk +
-				SemSimOWLFactory.getIRIfragment(((ReferenceTerm) pmc).getPhysicalDefinitionURI().toString());
-			}
-			else uritrunk = uritrunk + SemSimOWLFactory.URIencoding(pmc.getName());
-			uritrunk = uritrunk + "_";
-			uri = URI.create(SemSimOWLFactory.generateUniqueIRIwithNumber(uritrunk.toString(), existinguris));
+		if(pmc instanceof PhysicalProcess)
+			uri = URI.create(uritrunk + SemSimOWLFactory.URIencoding(pmc.getName()));
+		else if(pmc instanceof PhysicalForce){
+			uri = URI.create(SemSimOWLFactory.generateUniqueIRIwithNumber(uritrunk + "Force_", existinguris));
 		}
-		else uri = URI.create(uritrunk + SemSimOWLFactory.URIencoding(pmc.getName()));
-		
-		// If there is already a data structure with the same URI as the physical model component,
-		// append with a numerical suffix until we have a unique ID
-		try {
-			Set<String> existingdsinds = SemSimOWLFactory.getIndividualsInTreeAsStrings(ont, SemSimTypes.DATASTRUCTURE.getURIasString());
+		else{
+			if(pmc instanceof CompositePhysicalEntity) uri = ((CompositePhysicalEntity)pmc).makeURI(namespace);
+
+			else{
+				if(pmc.hasPhysicalDefinitionAnnotation()){
+					uritrunk = uritrunk +
+					SemSimOWLFactory.getIRIfragment(((ReferenceTerm) pmc).getPhysicalDefinitionURI().toString());
+				}
+				else uritrunk = uritrunk + SemSimOWLFactory.URIencoding(pmc.getName());
 			
-			if(existingdsinds.contains(uri.toString()) && semsimmodel.getAssociatedDataStructure(pmc.getName()) != null)
-					uri = URI.create(SemSimOWLFactory.generateUniqueIRIwithNumber(uri.toString() + "_", existingdsinds)); 
+				uritrunk = uritrunk + "_";
+				uri = URI.create(SemSimOWLFactory.generateUniqueIRIwithNumber(uritrunk.toString(), existinguris));
 			}
-		catch (OWLException e) {e.printStackTrace();}
+		}
+		
+		// If by some chance we've created a URI already in use, change it so that it's unique
+		if(existinguris.contains(uri.toString()))
+			uri = URI.create(SemSimOWLFactory.generateUniqueIRIwithNumber(uri.toString() + "_", existinguris));
 
 		return uri;
 	}
 	
+	
+	/**
+	 * Add a new OWL Individual to the ontology that represents an input 
+	 * {@link PhysicalModelComponent}. Subclass the individual appropriately.
+	 * @param pmc The input {@link PhysicalModelComponent}
+	 * @param uriforind The URI of the OWL Individual corresponding to the component
+	 * @throws OWLException
+	 */
 	private void createPhysicalModelIndividual(PhysicalModelComponent pmc, String uriforind) throws OWLException{
-		String physicaltype = pmc.getComponentTypeasString();
+		String physicaltype = pmc.getComponentTypeAsString();
 		String parenturistring = null;
-		if(pmc.isType(SemSimTypes.PHYSICAL_PROPERTY_IN_COMPOSITE)) {
+		
+		if(pmc.isType(SemSimTypes.PHYSICAL_PROPERTY_IN_COMPOSITE))
 			parenturistring = SemSimTypes.PHYSICAL_PROPERTY.getURIasString();
-		}
-		else if(pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_ENTITY) || pmc.isType(SemSimTypes.CUSTOM_PHYSICAL_ENTITY)){
+		
+		else if(pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_ENTITY) || pmc.isType(SemSimTypes.CUSTOM_PHYSICAL_ENTITY))
 			parenturistring = SemSimTypes.PHYSICAL_ENTITY.getURIasString();
-		}
-		else if(pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_PROCESS) || pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_PROCESS)){
+		
+		else if(pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_PROCESS) || pmc.isType(SemSimTypes.CUSTOM_PHYSICAL_PROCESS))
 			parenturistring = SemSimTypes.PHYSICAL_PROCESS.getURIasString();
-		}
+		
+		else if(pmc.isType(SemSimTypes.CUSTOM_PHYSICAL_FORCE))
+			parenturistring = SemSimTypes.PHYSICAL_FORCE.getURIasString();
+		
+		else if(pmc.isType(SemSimTypes.REFERENCE_PHYSICAL_DEPENDENCY))
+			parenturistring = SemSimTypes.PHYSICAL_DEPENDENCY.getURIasString();
+		
 		
 		Set<String> allphysmodclasses = new HashSet<String>();
 		allphysmodclasses.addAll(SemSimOWLFactory.getAllSubclasses(ont, SemSimTypes.PHYSICAL_MODEL_COMPONENT.getURIasString(), false));
@@ -705,44 +955,54 @@ public class SemSimOWLwriter extends ModelWriter {
 		
 		// If there is a "refers-to" reference ontology annotation
 		if(pmc.hasPhysicalDefinitionAnnotation()){
-			ReferenceTerm firstann = (ReferenceTerm)pmc;
-			parenturistring = firstann.getPhysicalDefinitionURI().toString();
-			label = firstann.getName();
+			ReferenceTerm refterm = (ReferenceTerm)pmc;
+			parenturistring = refterm.getPhysicalDefinitionURI().toString();
+			label = refterm.getName();
 			
 			// Add the reference class to the semsim model if needed
-			if(!allphysmodclasses.contains(parenturistring)){
+			if( ! allphysmodclasses.contains(parenturistring))
 				SemSimOWLFactory.addExternalReferenceClass(ont, parenturistring, physicaltype, label, manager);
-			}
 			
 			// Put the individual physical component in the reference class
 			SemSimOWLFactory.createSemSimIndividual(ont, uriforind, factory.getOWLClass(IRI.create(parenturistring)), "", manager);
 			
 			// Establish physical definition
 			SemSimOWLFactory.setIndDatatypeProperty(ont, uriforind, 
-					SemSimRelation.HAS_PHYSICAL_DEFINITION, firstann.getPhysicalDefinitionURI().toString(), manager);
+					SemSimRelation.HAS_PHYSICAL_DEFINITION, refterm.getPhysicalDefinitionURI().toString(), manager);
 		}
-		// Otherwise it's a custom entity, custom process or unspecified property
+		// Otherwise it's a custom entity, custom process, custom force or unspecified property
 		else if (!(pmc instanceof CompositePhysicalEntity)){
-			if(pmc instanceof PhysicalPropertyinComposite) parenturistring = SemSimTypes.PHYSICAL_PROPERTY.getURIasString();
+			
+			if(pmc instanceof PhysicalPropertyInComposite) 
+				parenturistring = SemSimTypes.PHYSICAL_PROPERTY.getURIasString();
+			else if(pmc instanceof PhysicalForce) parenturistring = SemSimTypes.PHYSICAL_FORCE.getURIasString();
 			else{
 				parenturistring = SemSimOWLFactory.getNamespaceFromIRI(uriforind) + SemSimOWLFactory.URIencoding(pmc.getName());
-				if(!allphysmodclasses.contains(parenturistring)){
-					parenturistring = pmc.getSemSimClassURI().toString();
-				}
+				
+				if(!allphysmodclasses.contains(parenturistring)) parenturistring = pmc.getSemSimClassURI().toString();
+				
 				label = pmc.getName();
 				description = pmc.getDescription();
 			}
 			SemSimOWLFactory.createSemSimIndividual(ont, uriforind, factory.getOWLClass(IRI.create(parenturistring)), "", manager);
 		}
+		
 		// Set the RDF label for the individual (RDF label for reference classes are set in addExternalReferenceClass method)
-		if(label!=null)
+		if(label != null)
 			SemSimOWLFactory.setRDFLabel(ont, factory.getOWLNamedIndividual(IRI.create(uriforind)), label, manager);
-		if(description!=null){
+		
+		if(description != null)
 			SemSimOWLFactory.setRDFComment(ont, factory.getOWLNamedIndividual(IRI.create(uriforind)), description, manager);
-		}
 	}
 	
-	// Assert the multiplier on process participants
+	/**
+	 * Assert the multiplier on process participants
+	 * @param pp A process participant
+	 * @param stoich The process participant's stoichiometry
+	 * @return The OWL annotation added to the ontology that captures
+	 * the stoichiometry. Returned as a one-element set for use in related 
+	 * functions that use annotation sets as input parameters.
+	 */
 	private Set<OWLAnnotation> makeMultiplierAnnotation(PhysicalEntity pp, Double stoich){
 		Set<OWLAnnotation> anns = new HashSet<OWLAnnotation>();
 		OWLLiteral lit = factory.getOWLLiteral(stoich);
@@ -751,7 +1011,13 @@ public class SemSimOWLwriter extends ModelWriter {
 		return anns;
 	}
 	
-	// Assert a public interface annotation (for CellML-derived models)
+	
+	/**
+	 * Create an OWL annotation that indicates the type of grouping relationship
+	 * that exists between two submodels (for CellML-derived models)
+	 * @param type The type of submodel grouping ("encapsulation" or "containment")
+	 * @return A single-element set of OWL annotations capturing the grouping type
+	 */
 	private Set<OWLAnnotation> makeSubmodelSubsumptionAnnotation(String type){
 		Set<OWLAnnotation> anns = new HashSet<OWLAnnotation>();
 		OWLLiteral lit = factory.getOWLLiteral(type);
@@ -760,7 +1026,14 @@ public class SemSimOWLwriter extends ModelWriter {
 		return anns;
 	}
 	
-	// Assert a public interface annotation (for CellML-derived models)
+	
+	/**
+	 * Create OWL annotations that indicate the exponent, prefix, and
+	 * multiplier attributes of a unit factor in the model
+	 * @param factor A {@link UnitFactor} 
+	 * @return A set of OWL annotations that capture the exponent, prefix, and
+	 * multiplier attributes of the unit factor
+	 */
 	private Set<OWLAnnotation> makeUnitFactorAnnotations(UnitFactor factor){
 		Set<OWLAnnotation> anns = new HashSet<OWLAnnotation>();
 		
@@ -784,7 +1057,12 @@ public class SemSimOWLwriter extends ModelWriter {
 		return anns;
 	}
 	
-	// Assert annotations needed to retrieve an imported unit or submodel
+	/**
+	 * Assert annotations needed to retrieve an imported unit or submodel
+	 * @param imported An imported object
+	 * @return A single-element set of annotations indicating the reference
+	 * name of the imported object
+	 */
 	private Set<OWLAnnotation> makeAnnotationsForImport(Importable imported){
 		Set<OWLAnnotation> anns = new HashSet<OWLAnnotation>();
 		if(imported.getReferencedName()!=null){
@@ -795,6 +1073,12 @@ public class SemSimOWLwriter extends ModelWriter {
 		return anns;
 	}
 	
+	
+	/**
+	 * Class to represent CellML-style submodel groupings in the ontology
+	 * @author mneal
+	 *
+	 */
 	private class Subsumption{
 		public FunctionalSubmodel parent;
 		public FunctionalSubmodel child;
@@ -806,4 +1090,10 @@ public class SemSimOWLwriter extends ModelWriter {
 			rels.add(rel);
 		}
 	}
+
+	@Override
+	public AbstractRDFwriter getRDFwriter(){
+		return null;
+	}
+
 }

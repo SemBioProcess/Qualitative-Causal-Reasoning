@@ -24,18 +24,27 @@ import org.jdom.output.XMLOutputter;
 import org.semanticweb.owlapi.model.OWLException;
 
 import JSim.util.Xcept;
+import semsim.fileaccessors.ModelAccessor;
 import semsim.model.collection.SemSimModel;
 import semsim.model.computational.Computation;
 import semsim.model.computational.Event;
-import semsim.model.computational.Event.EventAssignment;
+import semsim.model.computational.EventAssignment;
 import semsim.model.computational.RelationalConstraint;
 import semsim.model.computational.datastructures.DataStructure;
 import semsim.model.computational.datastructures.Decimal;
 import semsim.model.computational.datastructures.MMLchoice;
 import semsim.model.computational.datastructures.SemSimInteger;
+import semsim.model.computational.units.UnitFactor;
 import semsim.model.computational.units.UnitOfMeasurement;
 import semsim.utilities.SemSimUtil;
 
+
+/**
+ * Class for reading in information about a model that is serialized in JSim's
+ * XMML format (an XML-based format for representing an MML model)
+ * @author mneal
+ *
+ */
 public class XMMLreader extends ModelReader {
 	private Hashtable<String,String> discretevarsandconstraints = new Hashtable<String,String>();
 	private Hashtable<String,Event> discretevarsandevents = new Hashtable<String,Event>();
@@ -48,6 +57,13 @@ public class XMMLreader extends ModelReader {
 	private String mmlcode;
 	
 	
+	/**
+	 * Constructor
+	 * @param modelaccessor Location of the MML file from which the XMML was generated
+	 * @param doc JDOM Document representation of the XMML content
+	 * @param mmlcode The raw MML model code
+	 * @throws Xcept
+	 */
 	public XMMLreader(ModelAccessor modelaccessor, Document doc, String mmlcode) throws Xcept {
 		super(modelaccessor);
 		this.doc = doc;
@@ -59,7 +75,7 @@ public class XMMLreader extends ModelReader {
 	public SemSimModel read() throws IOException, InterruptedException,
 			OWLException, CloneNotSupportedException, XMLStreamException {
 		
-		File srcfile = modelaccessor.getFileThatContainsModel();
+		File srcfile = modelaccessor.getFile();
 		if(srcfile != null){
 			doc = null;
 
@@ -70,10 +86,16 @@ public class XMMLreader extends ModelReader {
 			}
 			return readFromDocument();
 		}
-		else return null;
+		return null;
 	}
 	
-	
+	/**
+	 * Read the contents of the XMML as stored in the JDOM Document into a {@link SemSimModel} object
+	 * @return The {@link SemSimModel} corresponding to the XMML model 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws OWLException
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SemSimModel readFromDocument() throws IOException, InterruptedException, OWLException {
 		int numdomains = 0;
@@ -103,7 +125,40 @@ public class XMMLreader extends ModelReader {
 				}
 				else if(unitel.getName().equals("derivedUnit")){
 					uom.setFundamental(false);
-					// ... need methods here to collect the unitFactors, etc.
+					// Process the realFactors (multipliers) and unit factors
+					String multiplier = null;
+					Iterator<?> realfactorit = unitel.getChildren("realFactor").iterator();
+					
+					// There should only be one realFactor, but we loop anyway
+					while(realfactorit.hasNext()){
+						Element realfactor = (Element) realfactorit.next();
+						multiplier = realfactor.getAttributeValue("multiplier");
+					}
+										
+					// Get the factors for the unit
+					Iterator<?> unitfactorit = unitel.getChildren("unitFactor").iterator();
+					
+					while(unitfactorit.hasNext()){
+						Element unitfactor = (Element) unitfactorit.next();
+						String baseunits = unitfactor.getAttributeValue("unitID");
+						// NOTE: there is no "prefix" attribute assigned to unit factors
+						String exponent = unitfactor.getAttributeValue("exponent");
+						UnitOfMeasurement baseuom = semsimmodel.getUnit(baseunits);
+						
+						// This assumes that all unit factors are fundamental units, 
+						// which appears true based on my experience with XMML (-MLN)
+						if(baseuom==null){
+							baseuom = new UnitOfMeasurement(baseunits);
+							baseuom.setFundamental(true);
+							semsimmodel.addUnit(baseuom);
+						}
+						double exp = (exponent==null) ? 1.0 : Double.parseDouble(exponent);
+						double mult = (multiplier==null) ? 1.0 : Double.parseDouble(multiplier);
+						
+						if(uom.getUnitFactors().size()==0)
+							uom.addUnitFactor(new UnitFactor(baseuom, exp, null, mult)); // Only add multiplier to first unit factor
+						else uom.addUnitFactor(new UnitFactor(baseuom, exp, null));  
+					}
 				}
 			}
 		}
@@ -125,7 +180,7 @@ public class XMMLreader extends ModelReader {
 		while (variterator.hasNext()) {
 			Element varchild = (Element) variterator.next();
 			// if variable should go into SemSim
-			if (!varchild.getAttributeValue("id").endsWith(".ct")) {
+			if ( ! varchild.getAttributeValue("id").endsWith(".ct")) {
 				String codeword =  varchild.getAttributeValue("id");
 				
 				DataStructure ds = null;
@@ -137,6 +192,7 @@ public class XMMLreader extends ModelReader {
 				else if(vardatatype.equals("choice")) ds = new MMLchoice(codeword);
 				
 				semsimmodel.addDataStructure(ds);
+				ds.setMetadataID(codeword);
 								
 				if(codeword.contains(":") || codeword.endsWith("__init")) ds.setDeclared(false);
 				else ds.setDeclared(true);
@@ -310,7 +366,7 @@ public class XMMLreader extends ModelReader {
 			
 			while (stateactionsiterator.hasNext()) {
 				Element action = (Element) stateactionsiterator.next();
-				EventAssignment ssea = ssevent.new EventAssignment();
+				EventAssignment ssea = new EventAssignment();
 				String assignmentmathml = xmloutputter.outputString(action.getChild("expression").getChild("math",mathmlns));
 				ssea.setMathML(assignmentmathml);
 				String varstring = action.getAttributeValue("variableID");
@@ -344,52 +400,6 @@ public class XMMLreader extends ModelReader {
 		for(DataStructure ds : semsimmodel.getAssociatedDataStructures())
 			SemSimUtil.setComputationInputsForDataStructure(semsimmodel, ds, null);
 		
-//		// find the hasInput properties for the computations and hasRolePlayer properties for the dependencies
-//		for (Element tool : toolset) {
-//			Iterator solvedvarit = tool.getChild("solvedVariableList").getChildren("variableUsage").iterator();
-//			List invarchildren = tool.getChild("requiredVariableList").getChildren("variableUsage");
-//			while(solvedvarit.hasNext()){
-//				
-//				Iterator invariterator = tool.getChild("requiredVariableList").getChildren("variableUsage").iterator();
-//				Element solvedvar = (Element) solvedvarit.next();
-//				String name = solvedvar.getAttributeValue("variableID");
-//				
-//				if(semsimmodel.containsDataStructure(name) && solvedvar.getAttributeValue("status").equals("CURR")){
-//					DataStructure solvedds = semsimmodel.getAssociatedDataStructure(name);
-//					if(!solvedds.isSolutionDomain()){
-//						invariterator = invarchildren.iterator();
-//	
-//						// Get all the input variables
-//						while (invariterator.hasNext()) {
-//							Element invarchild = (Element) invariterator.next();
-//							String inputname = invarchild.getAttributeValue("variableID");
-//								
-//							// All data structures, including the undeclared ones, should have been entered by now
-//								
-//							// Establish input relationships
-//							if(semsimmodel.containsDataStructure(inputname)){
-//								// Is ok if data structures are dependent on themselves
-//								// Do not include the input relationship unless the input variable is actually in the MathML
-//								// for computing the output variable
-//								DataStructure inputds = semsimmodel.getAssociatedDataStructure(inputname);
-//								
-//								// As long as we're not looking at an ODE tool and the input isn't the derivative of the solved var, include input
-//								if(tool.getName().equals("ODETool")){
-//									if(inputds.getName().startsWith(solvedds.getName() + ":")){
-//										solvedds.getComputation().addInput(inputds);
-//									}
-//								}
-//								else{
-//									solvedds.getComputation().addInput(inputds);
-//								}
-//							}
-//							else System.out.println("Cannot set input: model doesn't have " + inputname);
-//						}	
-//					}
-//				}
-//			}
-//		} 
-		
 		// Set hasInput/inputFor relationships for discrete variables and the data structures required for triggering them
 		for(String dsx : discretevarsandeventtriggerinputs.keySet()){
 			for(String inputx : discretevarsandeventtriggerinputs.get(dsx))
@@ -404,9 +414,19 @@ public class XMMLreader extends ModelReader {
 		if(semsimmodel.getAssociatedDataStructures().isEmpty() && semsimmodel.getPhysicalModelComponents().isEmpty() && semsimmodel.getSubmodels().isEmpty()){
 			semsimmodel.addError(modelaccessor.getModelName() + " model appears to be empty.");
 		}
+		
+		// Set the semsimmodel name field
+		semsimmodel.setName(modelaccessor.getModelName());
+		
 		return semsimmodel;
 	}
 	
+	
+	/**
+	 * Deal with custom unit declarations
+	 * @throws FileNotFoundException
+	 * @throws OWLException
+	 */
 	private void setCustomUnits() throws FileNotFoundException, OWLException {
 		Map<String,String> unitnamesandcustomdeclarations = new HashMap<String,String>();
 		Scanner scnr = new Scanner(mmlcode);
@@ -436,6 +456,12 @@ public class XMMLreader extends ModelReader {
 		}
 	}
 	
+	
+	/**
+	 * Look up the XMML tool element that has an input ID
+	 * @param ID An input identifier
+	 * @return The XMML tool Element in the XMML code that has the input ID
+	 */
 	private Element getToolByID(String ID){
 		for(Element tool : toolset){
 			if(tool.getAttributeValue("id").equals(ID)){
@@ -446,6 +472,13 @@ public class XMMLreader extends ModelReader {
 		return null;
 	}
 	
+	
+	/**
+	 * Find the XMML tool that is used to determine the numerical values of an
+	 * input codeword
+	 * @param cdwd An input codeword used in the XMML model
+	 * @return The XMML tool Element that describes how to solve the codeword
+	 */
 	private Element getToolToSolveCodeword(String cdwd){
 		for(Element tool : toolset){
 			List<?> varlist = tool.getChild("solvedVariableList").getChildren("variableUsage");
@@ -464,6 +497,12 @@ public class XMMLreader extends ModelReader {
 	}
 	
 	
+	/**
+	 * Get the set of codewords that are used in the computations for
+	 * a given XMML tool Element
+	 * @param toolid The ID of the XMML tool Element
+	 * @return Set of codewords that are required for the tool
+	 */
 	private Set<String> getRequiredVariablesForTool(String toolid){
 		Element tool = getToolByID(toolid);
 		Set<String> reqvars = new HashSet<String>();
@@ -476,6 +515,13 @@ public class XMMLreader extends ModelReader {
 	}
 	
 	
+	/**
+	 * Get the initial condition statement for a codeword in the model
+	 * @param tool The parent tool Element that would contain the initial condition
+	 * for the codeword
+ 	 * @param cdwd The codeword
+	 * @return An expression indicating the initial condition of the codeword
+	 */
 	private String getIC(Element tool, String cdwd){
 		// get the tool that sets the IC
 		Iterator<?> ICit = tool.getChild("initialConditionList").getChildren("initialCondition").iterator();

@@ -10,7 +10,6 @@ import java.util.Set;
 import org.jdom.JDOMException;
 
 import semsim.SemSimLibrary;
-import semsim.SemSimObject;
 import semsim.annotation.Annotatable;
 import semsim.annotation.Annotation;
 import semsim.annotation.Ontology;
@@ -18,31 +17,33 @@ import semsim.annotation.ReferenceOntologyAnnotation;
 import semsim.annotation.ReferenceTerm;
 import semsim.definitions.ReferenceOntologies.ReferenceOntology;
 import semsim.definitions.SemSimRelations.SemSimRelation;
-import semsim.definitions.SemSimConstants;
+import semsim.definitions.OtherKBconstants;
+import semsim.model.SemSimComponent;
 import semsim.model.collection.SemSimModel;
-import semsim.model.physical.PhysicalEntity;
-import semsim.model.physical.PhysicalProcess;
 import semsim.model.physical.object.CompositePhysicalEntity;
-import semsim.model.physical.object.PhysicalProperty;
-import semsim.model.physical.object.PhysicalPropertyinComposite;
 import semsim.owl.SemSimOWLFactory;
 import semsim.utilities.webservices.BioPortalSearcher;
 import semsim.utilities.webservices.KEGGsearcher;
 import semsim.utilities.webservices.UniProtSearcher;
 
+/**
+ * Class for looking up human-readable names for reference URIs
+ * @author mneal
+ */
 public class ReferenceTermNamer {
 		
 	public static final String BioPortalOBOlibraryPrefix = "http://purl.obolibrary.org/obo/";
 	
 	/**
-	 * @param model The SemSim model containing the SemSimObjects that will be processed
+	 * @param model A SemSim model containing the SemSimObjects that will be processed
+	 * @param lib A {@link SemSimLibrary} instance
 	 * @return The set of SemSimObjects annotated with reference terms that are missing names.
 	 */
-	public static Set<SemSimObject> getModelComponentsWithUnnamedAnnotations(SemSimModel model, SemSimLibrary lib){
+	public static Set<SemSimComponent> getModelComponentsWithUnnamedAnnotations(SemSimModel model, SemSimLibrary lib){
 		
-		Set<SemSimObject> unnamed = new HashSet<SemSimObject>();
+		Set<SemSimComponent> unnamed = new HashSet<SemSimComponent>();
 		
-		for(SemSimObject ssc : model.getAllModelComponents()){
+		for(SemSimComponent ssc : model.getAllModelComponents()){
 			if(ssc instanceof Annotatable){
 
 				Annotatable annthing = (Annotatable)ssc;
@@ -71,7 +72,15 @@ public class ReferenceTermNamer {
 	}
 	
 	
-	public static Map<String,String[]> getNamesForOntologyTermsInModel(SemSimModel model, Map<String, String[]> map, SemSimLibrary lib){	
+	/**
+	 * Retrieve human-readable names for reference URIs in a SemSim model
+	 * @param model The model to process
+	 * @param map An optional mapping between reference URIs and valid human-readable names
+	 * @param lib A {@link SemSimLibrary} instance
+	 * @return The input map extended to include URI-to-names mappings discovered during execution 
+	 * of this function
+	 */
+	public static Map<String,String[]> getNamesForReferenceTermsInModel(SemSimModel model, Map<String, String[]> map, SemSimLibrary lib){	
 		Map<String,String[]> URInameMap = null;
 		if(map==null)
 			URInameMap = new HashMap<String,String[]>();
@@ -80,7 +89,7 @@ public class ReferenceTermNamer {
 		// If we are online, get all the components of the model that can be annotated
 		// then see if they are missing their Descriptions. Retrieve description from web services
 		// or the local cache
-		for(SemSimObject ssc : getModelComponentsWithUnnamedAnnotations(model, lib)){
+		for(SemSimComponent ssc : getModelComponentsWithUnnamedAnnotations(model, lib)){
 			
 			Annotatable annthing = (Annotatable)ssc;
 			Set<Annotation> anns = new HashSet<Annotation>();
@@ -106,7 +115,7 @@ public class ReferenceTermNamer {
 						
 						// If we retrieved the name
 						if(name != null){
-							System.out.println("Found name for " + SemSimOWLFactory.getIRIfragment(uri.toString()) + ": " + name);
+							System.out.println("Found name for " + uri+ ": " + name);
 							URInameMap.put(uri.toString(), new String[]{name});
 						}
 						else{
@@ -120,8 +129,7 @@ public class ReferenceTermNamer {
 					// Set the name of the semsim component to the annotation description if it's
 					// a physical entity, physical process or physical property
 					if(ann.getRelation()==SemSimRelation.HAS_PHYSICAL_DEFINITION
-							&& ((ssc instanceof PhysicalEntity)  || (ssc instanceof PhysicalProcess) 
-									|| (ssc instanceof PhysicalProperty) || (ssc instanceof PhysicalPropertyinComposite)))
+							&& ssc.isPhysicalComponent())
 						ssc.setName(name);
 				}
 			}
@@ -135,6 +143,15 @@ public class ReferenceTermNamer {
 		return URInameMap;
 	}
 	
+	
+	/**
+	 * Internal function for looking up human-readable names for a given URI.
+	 * Determines which lookup service to use based on the URI's parent 
+	 * knowledge resource
+	 * @param uri The URI to process
+ 	 * @param lib A {@link SemSimLibrary} instance
+	 * @return The human-readable name for the input URI
+	 */
 	private static String getNameFromURI(URI uri, SemSimLibrary lib) {
 		String name = null;
 
@@ -212,17 +229,17 @@ public class ReferenceTermNamer {
 
 		}
 
-		else if(KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_COMPOUND_KB_FULLNAME)
-				|| KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_DRUG_KB_FULLNAME)
-				|| KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_REACTION_KB_FULLNAME)
-				|| KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_ORTHOLOGY_KB_FULLNAME)
-				|| KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_PATHWAY_KB_FULLNAME)
-				|| KBname.equals(SemSimConstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_GENES_KB_FULLNAME)){
+		else if(KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_COMPOUND_KB_FULLNAME)
+				|| KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_DRUG_KB_FULLNAME)
+				|| KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_REACTION_KB_FULLNAME)
+				|| KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_ORTHOLOGY_KB_FULLNAME)
+				|| KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_PATHWAY_KB_FULLNAME)
+				|| KBname.equals(OtherKBconstants.KYOTO_ENCYCLOPEDIA_OF_GENES_AND_GENOMES_GENES_KB_FULLNAME)){
 			try {
 				name = KEGGsearcher.getNameForID(id);
 			} catch (IOException e) {e.printStackTrace();}
 		}
-		else if(KBname.equals(SemSimConstants.BRAUNSCHWEIG_ENZYME_DATABASE_FULLNAME)){
+		else if(KBname.equals(OtherKBconstants.BRAUNSCHWEIG_ENZYME_DATABASE_FULLNAME)){
 			// Use KEGG for EC codes
 			try {
 				name = KEGGsearcher.getNameForID("ec:" + id);
@@ -230,7 +247,7 @@ public class ReferenceTermNamer {
 
 		}
 
-		else if(KBname.equals(SemSimConstants.UNIPROT_FULLNAME)){
+		else if(KBname.equals(OtherKBconstants.UNIPROT_FULLNAME)){
 			try {
 				name = UniProtSearcher.getPreferredNameForID(id);
 			} 
