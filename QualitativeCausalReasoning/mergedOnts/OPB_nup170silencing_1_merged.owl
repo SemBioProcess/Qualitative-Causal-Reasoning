@@ -4570,13 +4570,13 @@ Clearly, no physical event is truly discrete as that implies a change of physica
         <rdfs:subClassOf>
             <Restriction>
                 <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB_00320"/>
-                <someValuesFrom rdf:resource="http://bhi.washington.edu/OPB#OPB_00435"/>
+                <someValuesFrom rdf:resource="http://bhi.washington.edu/OPB#OPB_00195"/>
             </Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <Restriction>
                 <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB_00320"/>
-                <someValuesFrom rdf:resource="http://bhi.washington.edu/OPB#OPB_00195"/>
+                <someValuesFrom rdf:resource="http://bhi.washington.edu/OPB#OPB_00435"/>
             </Restriction>
         </rdfs:subClassOf>
         <OPB:OPB01116>chemical reactant</OPB:OPB01116>
@@ -11138,19 +11138,33 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
+        <rdf:type>
+            <Restriction>
+                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                <allValuesFrom>
+                    <Class>
+                        <unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        </unionOf>
+                    </Class>
+                </allValuesFrom>
+            </Restriction>
+        </rdf:type>
         <rdf:type>
             <Class>
                 <intersectionOf rdf:parseType="Collection">
@@ -11176,66 +11190,52 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <rdf:type>
-            <Restriction>
-                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                <allValuesFrom>
-                    <Class>
-                        <unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        </unionOf>
-                    </Class>
-                </allValuesFrom>
-            </Restriction>
-        </rdf:type>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_1 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_2 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_1">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_2">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00154"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_1"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_2"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -11276,34 +11276,34 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -11344,55 +11344,134 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01650"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0"/>
-        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0"/>
+        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
     </NamedIndividual>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
-        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0"/>
+        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
+    </Axiom>
+    <Axiom>
+        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
+        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0"/>
+    </Axiom>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_dependency -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_dependency">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
+        <rdf:type>
+            <Restriction>
+                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                <allValuesFrom>
+                    <Class>
+                        <unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        </unionOf>
+                    </Class>
+                </allValuesFrom>
+            </Restriction>
+        </rdf:type>
+        <rdf:type>
+            <Class>
+                <intersectionOf rdf:parseType="Collection">
+                    <Restriction>
+                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
+                    </Restriction>
+                    <Restriction>
+                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
+                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</qualifiedCardinality>
+                    </Restriction>
+                </intersectionOf>
+            </Class>
+        </rdf:type>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0 -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01650"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
+        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0"/>
+    </NamedIndividual>
+    <Axiom>
+        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
+        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
+    </Axiom>
+    <Axiom>
+        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
+        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0"/>
     </Axiom>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Class>
@@ -11423,141 +11502,62 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </allValuesFrom>
             </Restriction>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01650"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
-        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
+        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0"/>
     </NamedIndividual>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
-    </Axiom>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_dependency -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_dependency">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
-        <rdf:type>
-            <Class>
-                <intersectionOf rdf:parseType="Collection">
-                    <Restriction>
-                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
-                    </Restriction>
-                    <Restriction>
-                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</qualifiedCardinality>
-                    </Restriction>
-                </intersectionOf>
-            </Class>
-        </rdf:type>
-        <rdf:type>
-            <Restriction>
-                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                <allValuesFrom>
-                    <Class>
-                        <unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        </unionOf>
-                    </Class>
-                </allValuesFrom>
-            </Restriction>
-        </rdf:type>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property"/>
-    </NamedIndividual>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0"/>
-    </NamedIndividual>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0 -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01650"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
-        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0"/>
-    </NamedIndividual>
-    <Axiom>
-        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
-        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0"/>
-    </Axiom>
-    <Axiom>
-        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
-        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
-    </Axiom>
-    <Axiom>
-        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
-        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
     </Axiom>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Class>
@@ -11588,70 +11588,57 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </allValuesFrom>
             </Restriction>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01650"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
-        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0"/>
-        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
+        <SemSim:hasSink rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0"/>
+        <SemSim:hasSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0"/>
     </NamedIndividual>
+    <Axiom>
+        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
+        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
+    </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0"/>
     </Axiom>
     <Axiom>
         <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
         <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
-    </Axiom>
-    <Axiom>
-        <SemSim:hasMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</SemSim:hasMultiplier>
-        <annotatedProperty rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0"/>
-        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0"/>
+        <annotatedSource rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0"/>
+        <annotatedTarget rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0"/>
     </Axiom>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
-        <rdf:type>
-            <Restriction>
-                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                <allValuesFrom>
-                    <Class>
-                        <unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        </unionOf>
-                    </Class>
-                </allValuesFrom>
-            </Restriction>
-        </rdf:type>
         <rdf:type>
             <Class>
                 <intersectionOf rdf:parseType="Collection">
@@ -11668,34 +11655,47 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property"/>
+        <rdf:type>
+            <Restriction>
+                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                <allValuesFrom>
+                    <Class>
+                        <unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        </unionOf>
+                    </Class>
+                </allValuesFrom>
+            </Restriction>
+        </rdf:type>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -11736,35 +11736,35 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -11805,35 +11805,35 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -11874,103 +11874,35 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_dependency">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
-        <rdf:type>
-            <Class>
-                <intersectionOf rdf:parseType="Collection">
-                    <Class>
-                        <intersectionOf rdf:parseType="Collection">
-                            <Restriction>
-                                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                                <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00154"/>
-                                <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
-                            </Restriction>
-                            <Restriction>
-                                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                                <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
-                                <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
-                            </Restriction>
-                        </intersectionOf>
-                    </Class>
-                    <Restriction>
-                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
-                    </Restriction>
-                </intersectionOf>
-            </Class>
-        </rdf:type>
-        <rdf:type>
-            <Restriction>
-                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                <allValuesFrom>
-                    <Class>
-                        <unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        </unionOf>
-                    </Class>
-                </allValuesFrom>
-            </Restriction>
-        </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_property"/>
-    </NamedIndividual>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_property -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_property">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0"/>
-    </NamedIndividual>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0 -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0">
-        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_property"/>
-    </NamedIndividual>
-    
-
-
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_dependency -->
-
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Restriction>
@@ -12011,34 +11943,34 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
         <rdf:type>
             <Class>
@@ -12079,49 +12011,35 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </allValuesFrom>
             </Restriction>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0 -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0 -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
-        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_dependency -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_dependency -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_dependency">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_dependency">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
-        <rdf:type>
-            <Restriction>
-                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                <allValuesFrom>
-                    <Class>
-                        <unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
-                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
-                        </unionOf>
-                    </Class>
-                </allValuesFrom>
-            </Restriction>
-        </rdf:type>
         <rdf:type>
             <Class>
                 <intersectionOf rdf:parseType="Collection">
@@ -12147,18 +12065,100 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </intersectionOf>
             </Class>
         </rdf:type>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property"/>
+        <rdf:type>
+            <Restriction>
+                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                <allValuesFrom>
+                    <Class>
+                        <unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        </unionOf>
+                    </Class>
+                </allValuesFrom>
+            </Restriction>
+        </rdf:type>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property"/>
     </NamedIndividual>
     
 
 
-    <!-- http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property -->
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property -->
 
-    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property">
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property">
         <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
-        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0 -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01014"/>
+        <SemSim:hasPhysicalProperty rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_dependency -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_dependency">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_01391"/>
+        <rdf:type>
+            <Class>
+                <intersectionOf rdf:parseType="Collection">
+                    <Class>
+                        <intersectionOf rdf:parseType="Collection">
+                            <Restriction>
+                                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                                <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00154"/>
+                                <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
+                            </Restriction>
+                            <Restriction>
+                                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                                <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00592"/>
+                                <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
+                            </Restriction>
+                        </intersectionOf>
+                    </Class>
+                    <Restriction>
+                        <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <onClass rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
+                        <qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</qualifiedCardinality>
+                    </Restriction>
+                </intersectionOf>
+            </Class>
+        </rdf:type>
+        <rdf:type>
+            <Restriction>
+                <onProperty rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                <allValuesFrom>
+                    <Class>
+                        <unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00154"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00340"/>
+                            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00592"/>
+                        </unionOf>
+                    </Class>
+                </allValuesFrom>
+            </Restriction>
+        </rdf:type>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+        <OPB:OPB01070 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+        <OPB:OPB_00000 rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property -->
+
+    <NamedIndividual rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property">
+        <rdf:type rdf:resource="http://bhi.washington.edu/OPB#OPB_00340"/>
+        <SemSim:physicalPropertyOf rdf:resource="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0"/>
     </NamedIndividual>
     
 
@@ -12174,21 +12174,20 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00116"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00165"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00189"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00208"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00233"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00319"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00451"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01015"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01350"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01353"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01354"/>
         </members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01090"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01091"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01092"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00014"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00035"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00092"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00249"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00521"/>
         </members>
     </rdf:Description>
     <rdf:Description>
@@ -12202,11 +12201,103 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00007"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00008"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00011"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00012"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00015"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00178"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00210"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00312"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00408"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01046"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01083"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01086"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01136"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00061"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00415"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01089"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00136"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00251"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00357"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00488"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00002"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00569"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01215"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01502"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01308"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01338"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01339"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00302"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00550"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00552"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00041"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00221"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01328"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00004"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00005"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00086"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00428"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00437"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01148"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00224"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00452"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01427"/>
+        </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00036"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00172"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00331"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00337"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00446"/>
         </members>
     </rdf:Description>
     <rdf:Description>
@@ -12223,32 +12314,6 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00101"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00190"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00258"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00061"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00415"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01089"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00014"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00035"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00092"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00249"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00521"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00167"/>
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00353"/>
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01047"/>
@@ -12257,20 +12322,67 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01308"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01338"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01339"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00368"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00458"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00500"/>
         </members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00408"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01046"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01083"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01086"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01136"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00101"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00190"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00258"/>
         </members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#esc1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_2"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nucleus_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#nup170_rif1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r2_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r3_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#r4_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rap1_sir4_esc1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#rif1_rap1_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#silencedSubtelomere_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#sir4_property"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_0"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_dependency"/>
+            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/16112018100117733m0800#unsilencedSubtelomere_property"/>
+        </distinctMembers>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
@@ -12283,59 +12395,10 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00178"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00210"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00312"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01090"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01091"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01092"/>
         </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
-        <distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#esc1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_1"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nucleus_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#nup170_rif1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r2_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r3_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#r4_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rap1_sir4_esc1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#rif1_rap1_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#silencedSubtelomere_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#sir4_property"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_0"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_dependency"/>
-            <rdf:Description rdf:about="http://www.bhi.washington.edu/SemSim/15112018142037424m0800#unsilencedSubtelomere_property"/>
-        </distinctMembers>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
@@ -12343,58 +12406,6 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00132"/>
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00218"/>
             <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00514"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00041"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00221"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01328"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01078"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01079"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01081"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01082"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00036"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00172"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00331"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00337"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00446"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00428"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00437"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01148"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00004"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00005"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00086"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00136"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00251"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00357"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00488"/>
         </members>
     </rdf:Description>
     <rdf:Description>
@@ -12411,43 +12422,32 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00368"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00458"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00500"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01078"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01079"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01081"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01082"/>
         </members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00224"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00452"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01427"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00116"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00165"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00189"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00208"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00233"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00319"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00451"/>
         </members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00002"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00569"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01215"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01502"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01015"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01350"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01353"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_01354"/>
-        </members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00302"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00550"/>
-            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00552"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00007"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00008"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00011"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00012"/>
+            <rdf:Description rdf:about="http://bhi.washington.edu/OPB#OPB_00015"/>
         </members>
     </rdf:Description>
     
@@ -12481,31 +12481,9 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01106"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
-            </rdf:Description>
-        </swrl:head>
         <swrl:body>
             <rdf:Description>
                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
                 <rdf:rest>
                     <rdf:Description>
                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
@@ -12531,8 +12509,8 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                                     <rdf:Description>
                                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
                                                         <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
-                                                        <swrl:argument2 rdf:resource="urn:swrl#process1"/>
-                                                        <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
                                                     </rdf:Description>
                                                 </rdf:first>
                                             </rdf:Description>
@@ -12540,13 +12518,69 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                         <rdf:first>
                                             <rdf:Description>
                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
                                                 <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
-                                                <swrl:argument1 rdf:resource="urn:swrl#process1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
                                             </rdf:Description>
                                         </rdf:first>
                                     </rdf:Description>
                                 </rdf:rest>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01106"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                 <rdf:first>
                                     <rdf:Description>
                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
@@ -12555,10 +12589,142 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                         <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
                                     </rdf:Description>
                                 </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#process1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process1"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01071"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01071"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
+            </rdf:Description>
+        </swrl:head>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                    </rdf:Description>
+                                </rdf:rest>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
+                                    </rdf:Description>
+                                </rdf:first>
                             </rdf:Description>
                         </rdf:rest>
                     </rdf:Description>
                 </rdf:rest>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                    </rdf:Description>
+                </rdf:first>
             </rdf:Description>
         </swrl:body>
     </rdf:Description>
@@ -12606,14 +12772,6 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                 <rdf:rest>
                                     <rdf:Description>
                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                        <rdf:first>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasPhysicalProperty"/>
-                                                <swrl:argument1 rdf:resource="urn:swrl#ent1"/>
-                                                <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                                            </rdf:Description>
-                                        </rdf:first>
                                         <rdf:rest>
                                             <rdf:Description>
                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
@@ -12628,6 +12786,14 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                                 </rdf:first>
                                             </rdf:Description>
                                         </rdf:rest>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasPhysicalProperty"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#ent1"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
+                                            </rdf:Description>
+                                        </rdf:first>
                                     </rdf:Description>
                                 </rdf:rest>
                             </rdf:Description>
@@ -12647,155 +12813,6 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01071"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
-            </rdf:Description>
-        </swrl:head>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                        <rdf:first>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
-                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
-                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
-                                            </rdf:Description>
-                                        </rdf:first>
-                                        <rdf:rest>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                                                <rdf:first>
-                                                    <rdf:Description>
-                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
-                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
-                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
-                                                    </rdf:Description>
-                                                </rdf:first>
-                                            </rdf:Description>
-                                        </rdf:rest>
-                                    </rdf:Description>
-                                </rdf:rest>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
-            </rdf:Description>
-        </swrl:body>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:rest>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                        <rdf:rest>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                                                <rdf:first>
-                                                    <rdf:Description>
-                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
-                                                        <swrl:argument2 rdf:resource="urn:swrl#process"/>
-                                                        <swrl:argument1 rdf:resource="urn:swrl#prop2"/>
-                                                    </rdf:Description>
-                                                </rdf:first>
-                                            </rdf:Description>
-                                        </rdf:rest>
-                                        <rdf:first>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#physicalPropertyOf"/>
-                                                <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
-                                                <swrl:argument1 rdf:resource="urn:swrl#prop1"/>
-                                            </rdf:Description>
-                                        </rdf:first>
-                                    </rdf:Description>
-                                </rdf:rest>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#process"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                            </rdf:Description>
-                        </rdf:rest>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
-                            </rdf:Description>
-                        </rdf:first>
-                    </rdf:Description>
-                </rdf:rest>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
-            </rdf:Description>
-        </swrl:body>
         <swrl:head>
             <rdf:Description>
                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
@@ -12810,37 +12827,20 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                 </rdf:first>
             </rdf:Description>
         </swrl:head>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:head>
+        <swrl:body>
             <rdf:Description>
                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                 <rdf:first>
                     <rdf:Description>
                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01071"/>
+                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
                         <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
                         <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
                     </rdf:Description>
                 </rdf:first>
-            </rdf:Description>
-        </swrl:head>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                 <rdf:rest>
                     <rdf:Description>
                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
-                            </rdf:Description>
-                        </rdf:first>
                         <rdf:rest>
                             <rdf:Description>
                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
@@ -12858,7 +12858,7 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                         <rdf:first>
                                             <rdf:Description>
                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSource"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.bhi.washington.edu/SemSim#hasSink"/>
                                                 <swrl:argument2 rdf:resource="urn:swrl#ent1"/>
                                                 <swrl:argument1 rdf:resource="urn:swrl#process1"/>
                                             </rdf:Description>
@@ -12881,16 +12881,16 @@ The accepted value in SI units is 1.3806488(13)×10−23 J/K.</OPB:discussion>
                                 </rdf:rest>
                             </rdf:Description>
                         </rdf:rest>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB_00000"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#prop1"/>
+                            </rdf:Description>
+                        </rdf:first>
                     </rdf:Description>
                 </rdf:rest>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://bhi.washington.edu/OPB#OPB01070"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#dep1"/>
-                        <swrl:argument2 rdf:resource="urn:swrl#prop2"/>
-                    </rdf:Description>
-                </rdf:first>
             </rdf:Description>
         </swrl:body>
     </rdf:Description>
