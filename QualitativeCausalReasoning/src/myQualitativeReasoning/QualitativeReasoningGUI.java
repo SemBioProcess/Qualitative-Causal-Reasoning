@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -45,11 +46,14 @@ public class QualitativeReasoningGUI implements ActionListener {
 	private JComboBox<String> propertybox;
 	private JButton analyzecausalitystartbutton;
 	private JButton analyzecausalityendbutton;
+	private JPanel optionspanel;
 	private JPanel scrollerpanel;
 	private ResultsScroller upscroller;
 	private ResultsScroller downscroller;
 	private ResultsScroller ambiguousscroller;
 	private QualitativeReasoningWorkbench wb;
+	
+	public static JCheckBox assumefirstorderbutton;
 	
 	private String modelnamespace;
 	private File mergedontdirectory = new File("/Users/max_neal/Documents/workspaceLUNA/UppyDownyReasoning/mergedOnts");
@@ -67,7 +71,7 @@ public class QualitativeReasoningGUI implements ActionListener {
 		frame.setVisible(false);
 
 		frame.setPreferredSize(new Dimension(width, height));
-		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 		
 		loadPanel = new JPanel();
 		loadPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -87,6 +91,12 @@ public class QualitativeReasoningGUI implements ActionListener {
 		loadPanel.add(loadPanelButtonPanel, BorderLayout.NORTH);
 		loadPanel.add(loadLabel, BorderLayout.CENTER);
 		loadPanel.add(Box.createGlue(), BorderLayout.EAST);
+		
+		optionspanel = new JPanel();
+		//optionspanel.setBorder(BorderFactory.createTitledBorder("Options"));
+		assumefirstorderbutton = new JCheckBox("Assume 1st order kinetics for reactions without rate laws");
+		assumefirstorderbutton.setSelected(true);
+		optionspanel.add(assumefirstorderbutton);
 		
 		comboboxpanel = new JPanel();
 		comboboxpanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -108,7 +118,7 @@ public class QualitativeReasoningGUI implements ActionListener {
 		comboboxpanel.add(propertybox);
 		comboboxpanel.add(analyzecausalitystartbutton);
 		comboboxpanel.add(analyzecausalityendbutton);
-				
+		
 		scrollerpanel = new JPanel();
 		scrollerpanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 		scrollerpanel.setLayout(new BoxLayout(scrollerpanel, BoxLayout.X_AXIS));
@@ -123,9 +133,10 @@ public class QualitativeReasoningGUI implements ActionListener {
 		scrollerpanel.add(ambiguousscroller);
 		scrollerpanel.add(Box.createGlue());
 		
-		frame.add(loadPanel, BorderLayout.NORTH);
-		frame.add(comboboxpanel, BorderLayout.CENTER);
-		frame.add(scrollerpanel, BorderLayout.SOUTH);
+		frame.add(loadPanel);
+		frame.add(optionspanel);
+		frame.add(comboboxpanel);
+		frame.add(scrollerpanel);
 
 		frame.pack();
 		frame.setLocationRelativeTo(null);

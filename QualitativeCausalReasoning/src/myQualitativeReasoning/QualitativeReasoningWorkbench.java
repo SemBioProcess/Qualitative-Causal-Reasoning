@@ -43,10 +43,14 @@ import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
 import myQualitativeReasoning.QualitativeReasoningGUI.AnalysisType;
 import semsim.definitions.RDFNamespace;
 import semsim.definitions.SemSimRelations.SemSimRelation;
+import semsim.definitions.SemSimRelations.StructuralRelation;
+import semsim.definitions.SemSimTypes;
 import semsim.model.collection.SemSimModel;
 import semsim.model.computational.Computation;
 import semsim.model.computational.datastructures.DataStructure;
+import semsim.model.physical.PhysicalEntity;
 import semsim.model.physical.PhysicalProcess;
+import semsim.model.physical.object.CompositePhysicalEntity;
 import semsim.model.physical.object.PhysicalPropertyInComposite;
 import semsim.owl.SemSimOWLFactory;
 import semsim.writing.SemSimOWLwriter;
@@ -113,8 +117,19 @@ public class QualitativeReasoningWorkbench {
 	     for(DataStructure ds : model.getAssociatedDataStructures()){
 	    	 
 		     propClassCountMap.clear();
-
-	    	 if(ds.getComputationInputs().size() > 0) {
+		     
+		     boolean dshasinputs = ds.getComputationInputs().size() > 0;
+		     boolean dsisprocesswithnorate = false;
+		     
+		     if(ds.hasAssociatedPhysicalComponent() && ! ds.getComputation().hasMathML()){
+		    	 if(ds.getAssociatedPhysicalModelComponent() instanceof PhysicalProcess && QualitativeReasoningGUI.assumefirstorderbutton.isSelected()){
+		    		 dsisprocesswithnorate = true;
+		    	 }
+		     }
+    		 
+		     // If the data structure has computation inputs or it's a process with no rate law (and we are assuming 1st order kinetics for such processes), 
+		     // add its dependency info to the merged ontology
+	    	 if(dshasinputs || dsisprocesswithnorate) {
 	    		 
 	    		 Computation computation = ds.getComputation();
 	    		 	    		 
@@ -194,12 +209,73 @@ public class QualitativeReasoningWorkbench {
 		    		 }
 	    		 }
 	    		 
+	    		 // If we are assuming that reactions without rates should be governed by 
+	    		 // first-order mass action laws, find the data structures in the model
+	    		 // that correspond to the reactants in the reaction and set them as property players
+	    		 if(dsisprocesswithnorate){
+	    			 PhysicalProcess theprocess = ((PhysicalProcess)ds.getAssociatedPhysicalModelComponent());
+	    			 
+	    			 Set<PhysicalEntity> sourcesandmods = new HashSet<PhysicalEntity>();
+	    			 sourcesandmods.addAll(theprocess.getSourcePhysicalEntities());
+	    			 sourcesandmods.addAll(theprocess.getMediatorPhysicalEntities());
+	    			 
+	    			 Set<PhysicalEntity> cmpts = new HashSet<PhysicalEntity>();
+	    			 
+	    			 // Get the compartments for the participants
+	    			 // TODO: whether or not this is needed depends on the amount property of the
+	    			 // participants in the reaction. If concentrations, then need the compartment.
+	    			 for(PhysicalEntity participant : theprocess.getParticipants()){
+	    				 
+	    				 if(participant.getSemSimType()==SemSimTypes.COMPOSITE_PHYSICAL_ENTITY){
+	    					 CompositePhysicalEntity cpe = (CompositePhysicalEntity) participant;
+	    					 ArrayList<PhysicalEntity> cmptents = new ArrayList<PhysicalEntity>();
+	    					 ArrayList<StructuralRelation> cmptrels = new ArrayList<StructuralRelation>();
+	    					 
+	    					 ArrayList<PhysicalEntity> participantents = cpe.getArrayListOfEntities();
+	    					 ArrayList<StructuralRelation> participantrels = cpe.getArrayListOfStructuralRelations();
+	    					 
+	    					 cmptents.addAll(participantents);
+	    					 cmptents.remove(0);
+	    					 cmptrels.addAll(participantrels);
+	    					 cmptrels.remove(0);
+	    					 
+	    					 cmpts.add(new CompositePhysicalEntity(cmptents, cmptrels));
+	    				 }
+	    			 }
+	    			 
+	    			 // Find the data structures that represent properties of the participants
+	    			 // in the process, or the compartment it occurs in (for chemical network models)
+	    			 for(DataStructure particds : model.getAssociatedDataStructures()){
+	    				 
+	    				 if(particds.hasAssociatedPhysicalComponent()){
+	    					
+	    					 // If the data structure represents a property of a source or modifier...
+	    					 if(sourcesandmods.contains(particds.getAssociatedPhysicalModelComponent())){
+	    						 addPropertyIndividual(particds, modelns, depIndString);
+	    						 continue;
+	    					 }
+	    					 // ... otherwise see if it's a property of the process compartment
+	    					 else if(particds.getAssociatedPhysicalModelComponent() instanceof PhysicalEntity){
+	    						 
+	    						 for(PhysicalEntity onecmpts : cmpts){
+	    							 
+	    							 if(onecmpts.equals(particds.getAssociatedPhysicalModelComponent())){
+	    	    						 addPropertyIndividual(particds, modelns, depIndString);
+	    	    						 break;
+	    							 }
+	    						 }
+	    					 }
+	    				 }
+	    			 }
+	    		 }
 	    		 
-	    		 
-	    		 // Add property players from computational input set
-	    		 for(DataStructure inputds : computation.getInputs()){
-	    			 if(inputds.hasPhysicalProperty())
-	    				 addPropertyIndividual(inputds, modelns, depIndString);
+	    		 // Otherwise we're not processing a reaction rate property that has no rate law
+	    		 else{
+		    		 // Add property players from computational input set
+		    		 for(DataStructure inputds : computation.getInputs()){
+		    			 if(inputds.hasPhysicalProperty())
+		    				 addPropertyIndividual(inputds, modelns, depIndString);
+		    		 }
 	    		 }
 	    		 	    		 
 	    		 // Create the restrictions on the dependency individual
