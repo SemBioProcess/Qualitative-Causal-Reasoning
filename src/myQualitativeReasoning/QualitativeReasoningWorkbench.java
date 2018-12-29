@@ -40,7 +40,9 @@ import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
 
+import myQualitativeReasoning.Analyzer.UtilityRelation;
 import myQualitativeReasoning.QualitativeReasoningGUI.AnalysisType;
+import semsim.annotation.Relation;
 import semsim.definitions.RDFNamespace;
 import semsim.definitions.SemSimRelations.SemSimRelation;
 import semsim.definitions.SemSimRelations.StructuralRelation;
@@ -72,7 +74,7 @@ public class QualitativeReasoningWorkbench {
 	public static OWLAnnotationProperty multiplierprop = factory.getOWLAnnotationProperty(SemSimRelation.HAS_MULTIPLIER.getIRI());
 	
 	public static IRI hasDomainIRI = IRI.create(OPBns + "OPB_00320");
-	public static OWLObjectPropertyExpression hasPropertyPlayerProp = factory.getOWLObjectProperty(SemSimRelation.HAS_PROPERTY_PLAYER.getIRI());
+	public static OWLObjectPropertyExpression hasPropertyPlayerProp = factory.getOWLObjectProperty(Analyzer.hasPropertyPlayerIRI);
 	public OWLOntology mergedOnt;
 	public OWLOntology inferredAxiomsOntology;
 	public OWLOntology semsimOrigOnt;
@@ -483,9 +485,9 @@ public class QualitativeReasoningWorkbench {
 		 
 		 // If the data structure that has the property is an input to the dependency individual
 		 // and not solved by the dependency itself, assert hasPropertyPlayer object property
-		 SemSimRelation haspropplayer = depindividual.equals(modelns + ds.getName() + "_dependency") ? 
-				 SemSimRelation.HAS_SOLVED_PROPERTY_PLAYER : 
-					 SemSimRelation.HAS_PROPERTY_PLAYER;
+		 Relation haspropplayer = depindividual.equals(modelns + ds.getName() + "_dependency") ? 
+				 UtilityRelation.HAS_SOLVED_PROPERTY_PLAYER : 
+					 UtilityRelation.HAS_PROPERTY_PLAYER;
 				 
 		 SemSimOWLFactory.setIndObjectProperty(semsimDepOnt, depindividual, propertyURI,
 				 haspropplayer, null, manager);

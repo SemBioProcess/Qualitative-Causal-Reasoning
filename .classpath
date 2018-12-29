@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="semsim/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="ThirdParty/HermiT/HermiT.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/mneal/git/Qualitative-Causal-Reasoning/ThirdParty/SemSimAPI.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

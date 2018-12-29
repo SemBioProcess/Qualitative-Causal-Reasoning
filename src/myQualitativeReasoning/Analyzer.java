@@ -13,7 +13,12 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+
 import myQualitativeReasoning.QualitativeReasoningWorkbench.BatonVal;
+import semsim.annotation.Relation;
+import semsim.definitions.RDFNamespace;
 import semsim.definitions.SemSimRelations.SemSimRelation;
 import semsim.owl.SemSimOWLFactory;
 
@@ -28,7 +33,10 @@ public abstract class Analyzer {
 	
 	public static IRI negPropertyPlayerInIRI = IRI.create(QualitativeReasoningWorkbench.OPBns + "OPB_00006");
 	public static IRI posPropertyPlayerInIRI = IRI.create(QualitativeReasoningWorkbench.OPBns + "OPB_00038");
-	public static IRI hasSolvedPropertyPlayerIRI = SemSimRelation.HAS_SOLVED_PROPERTY_PLAYER.getIRI();
+	
+	public static IRI hasSolvedPropertyPlayerIRI = UtilityRelation.HAS_SOLVED_PROPERTY_PLAYER.getIRI();
+	public static IRI hasPropertyPlayerIRI = UtilityRelation.HAS_PROPERTY_PLAYER.getIRI();
+
 	public static IRI hasPosPropertyPlayerIRI = IRI.create(QualitativeReasoningWorkbench.OPBns + "OPB01071");
 	public static IRI hasNegPropertyPlayerIRI = IRI.create(QualitativeReasoningWorkbench.OPBns + "OPB01106");
 	
@@ -250,5 +258,62 @@ public abstract class Analyzer {
 		}
 		
 		return 0;
+	}
+	
+	
+	// Some relations used by the analyzer are not implemented in the SemSim API, 
+	// so we create them here ad-hoc using the SemSimRelation class as a template.
+	public enum UtilityRelation implements Relation{
+
+		HAS_PROPERTY_PLAYER("OPB01070", RDFNamespace.OPB.getNamespaceAsString(), "", RDFNamespace.OPB.getOWLid()),
+		HAS_SOLVED_PROPERTY_PLAYER("OPB_00000", RDFNamespace.OPB.getNamespaceAsString(), "", RDFNamespace.OPB.getOWLid());
+		
+		private String name;
+		private String uri;
+		private String description;
+		private String sparqlcode;
+	
+	/** Class constructor */
+		UtilityRelation(String name, String namespace, String desc, String owlid) {
+			this.name = name;
+			this.uri = namespace + name;
+			description = desc;
+			sparqlcode = owlid + ":" + name;
+		}
+
+		/** @return Get the name of the SemSimRelation */
+		public String getName() {
+			return name;
+		}
+		
+		/** @return The URI of the relation */
+		public URI getURI() {
+			return URI.create(uri);
+		}
+		
+		/** @return The URI of the relation as a string */
+		public String getURIasString() {
+			return uri;
+		}
+		
+		/** @return The relation's specified description */
+		public String getDescription() {
+			return description;
+		}
+		
+		/** @return Namespace of relation for use in SPARQL queries */
+		public String getSPARQLCode() {
+			return sparqlcode;
+		}
+		
+		/** @return The URI for the relation converted into an IRI */
+		public IRI getIRI() {
+			return IRI.create(uri);
+		}
+		
+		/** @return The relation as an RDF property */
+		public Property getRDFproperty(){
+			return ResourceFactory.createProperty(getURIasString());
+		}
 	}
 }
